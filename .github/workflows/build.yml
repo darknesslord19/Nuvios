@@ -1,0 +1,66 @@
+name: APK derle
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # CloudStream kaynak kodunun sabitlenmiş sürümü (yamalar bu sürüme göre hazırlandı)
+  CLOUDSTREAM_REF: eb962b4fb7b1387b8de42ec58000cee0a01fe741
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bu depoyu al
+        uses: actions/checkout@v4
+        with:
+          path: nuvios
+
+      - name: CloudStream kaynağını al
+        uses: actions/checkout@v4
+        with:
+          repository: recloudstream/cloudstream
+          ref: ${{ env.CLOUDSTREAM_REF }}
+          path: cs
+
+      - name: Nuvios yamasını uygula
+        working-directory: cs
+        run: git apply --whitespace=nowarn ../nuvios/patches/*.patch
+
+      - name: JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: APK derle
+        working-directory: cs
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleStableDebug --no-daemon
+
+      - name: APK dosyasını adlandır
+        run: |
+          mkdir -p out
+          cp cs/app/build/outputs/apk/stable/debug/*.apk out/Nuvios-${{ github.run_number }}.apk
+
+      - name: Actions çıktısı olarak yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nuvios-apk
+          path: out/*.apk
+
+      - name: Sürüm (Release) olarak yayınla
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Nuvios build ${{ github.run_number }}
+          files: out/*.apk

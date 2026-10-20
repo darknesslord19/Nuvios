@@ -1,0 +1,869 @@
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+index c714368..d334985 100644
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -103,7 +103,7 @@ android {
+     compileSdk = libs.versions.compileSdk.get().toInt()
+ 
+     defaultConfig {
+-        applicationId = "com.lagradost.cloudstream3"
++        applicationId = "com.darknesslord19.nuvios"
+         minSdk = libs.versions.minSdk.get().toInt()
+         targetSdk = libs.versions.targetSdk.get().toInt()
+         versionCode = libs.versions.versionCode.get().toInt()
+diff --git a/app/src/main/res/values-b+af/strings.xml b/app/src/main/res/values-b+af/strings.xml
+index b81848d..1d08ff2 100644
+--- a/app/src/main/res/values-b+af/strings.xml
++++ b/app/src/main/res/values-b+af/strings.xml
+@@ -92,7 +92,7 @@
+     <string name="action_remove_watching">Verwyder</string>
+     <string name="stream">Netwerk stroom</string>
+     <string name="type_on_hold">Op rus</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="home_play">Speel</string>
+     <string name="download_storage_text">Interne Berging</string>
+     <string name="app_dub_sub_episode_text_format" formatted="true">%1$s Ep %2$d</string>
+diff --git a/app/src/main/res/values-b+am/strings.xml b/app/src/main/res/values-b+am/strings.xml
+index 56b71f5..2cb6103 100644
+--- a/app/src/main/res/values-b+am/strings.xml
++++ b/app/src/main/res/values-b+am/strings.xml
+@@ -35,7 +35,7 @@
+     <string name="title_settings">ቅንብሮች</string>
+     <string name="title_search">መፈለጊያ</string>
+     <string name="loading">በመጫን ላይ…</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">በCloudStream አጫውት</string>
+     <string name="action_remove_from_bookmarks">ያስወግዱ</string>
+     <string name="error_bookmarks_text">ዕልባቶች</string>
+diff --git a/app/src/main/res/values-b+apc/strings.xml b/app/src/main/res/values-b+apc/strings.xml
+index 90eba42..698ce6e 100644
+--- a/app/src/main/res/values-b+apc/strings.xml
++++ b/app/src/main/res/values-b+apc/strings.xml
+@@ -139,7 +139,7 @@
+     <string name="category_updates">التجديدات وال نسخات الاحتياطية</string>
+     <string name="pref_filter_search_quality">خبي هيدي الجودات من نتايج التنبيش</string>
+     <string name="type_on_hold">موقف موقتًا</string>
+-    <string name="app_name">كلود ستريم</string>
++    <string name="app_name">Nuvios</string>
+     <string name="player_size_settings_des">شيل الأسود من الأطراف</string>
+     <string name="season_short">ج</string>
+     <string name="apk_installer_settings">طريقة تجديد الآپ</string>
+diff --git a/app/src/main/res/values-b+ar/strings.xml b/app/src/main/res/values-b+ar/strings.xml
+index 5456b1a..a50fa58 100644
+--- a/app/src/main/res/values-b+ar/strings.xml
++++ b/app/src/main/res/values-b+ar/strings.xml
+@@ -14,7 +14,7 @@
+     <string name="rated_format" formatted="true">تقييم: %.1f</string>
+     <string name="new_update_format" formatted="true">يوجد تحديث جديد! \n%1$s -&gt; %2$s</string>
+     <string name="duration_format" formatted="true">%d دقيقة</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">تشغيل بواسطة CloudStream</string>
+     <string name="title_home">الرئيسية</string>
+     <string name="title_search">البحث</string>
+diff --git a/app/src/main/res/values-b+ars/strings.xml b/app/src/main/res/values-b+ars/strings.xml
+index cd3830a..8682e7f 100644
+--- a/app/src/main/res/values-b+ars/strings.xml
++++ b/app/src/main/res/values-b+ars/strings.xml
+@@ -38,7 +38,7 @@
+     <string name="new_update_format" formatted="true">!تم العثور على تحديث جديد \n%1$s -&gt; %2$s</string>
+     <string name="rated_format" formatted="true">%.1f:قدر</string>
+     <string name="duration_format" formatted="true">%dاقل</string>
+-    <string name="app_name">كلاودستريم</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_search">بحث</string>
+     <string name="title_downloads">التحميلات</string>
+     <string name="title_settings">اعدادات</string>
+diff --git a/app/src/main/res/values-b+as/strings.xml b/app/src/main/res/values-b+as/strings.xml
+index b7efb33..9084e21 100644
+--- a/app/src/main/res/values-b+as/strings.xml
++++ b/app/src/main/res/values-b+as/strings.xml
+@@ -111,7 +111,7 @@
+     <string name="player_speed_text_format" formatted="true">গতি (%.2fx)</string>
+     <string name="next_episode">পৰৱৰ্তী এপিচ\'ড</string>
+     <string name="duration_format" formatted="true">%d মিনিট</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">ঘৰ</string>
+     <string name="no_data">তথ্য নাই</string>
+     <string name="episode_more_options_des">অধিক বিকল্পসমূহ</string>
+diff --git a/app/src/main/res/values-b+az/strings.xml b/app/src/main/res/values-b+az/strings.xml
+index b8a1f9e..503807d 100644
+--- a/app/src/main/res/values-b+az/strings.xml
++++ b/app/src/main/res/values-b+az/strings.xml
+@@ -52,7 +52,7 @@
+     <string name="next_season_episode_format" formatted="true">Sezon %1$d Bölüm %2$d bu tarixdə yayımlanacaq</string>
+     <string name="search_poster_img_des">Afişa</string>
+     <string name="player_speed_text_format" formatted="true">Sürət (%.2fx)</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">CloudStream ilə oynat</string>
+     <string name="type_completed">Tamamlandı</string>
+     <string name="title_settings">Parametrlər</string>
+diff --git a/app/src/main/res/values-b+be/strings.xml b/app/src/main/res/values-b+be/strings.xml
+index 9fbf8a8..9b8acdc 100644
+--- a/app/src/main/res/values-b+be/strings.xml
++++ b/app/src/main/res/values-b+be/strings.xml
+@@ -24,7 +24,7 @@
+     <string name="new_update_format" formatted="true">Знойдзена новае абнаўленне!\n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Запаўняльнік</string>
+     <string name="duration_format" formatted="true">%d хвіл</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Прайграць праз CloudStream</string>
+     <string name="title_home">Дамашняя</string>
+     <string name="title_search">Пошук</string>
+diff --git a/app/src/main/res/values-b+bg/strings.xml b/app/src/main/res/values-b+bg/strings.xml
+index 4fb7757..a60b374 100644
+--- a/app/src/main/res/values-b+bg/strings.xml
++++ b/app/src/main/res/values-b+bg/strings.xml
+@@ -19,7 +19,7 @@
+     <string formatted="true" name="new_update_format">Намерена е нова актуализация! \n%1$s -&gt; %2$s</string>
+     <string formatted="true" name="filler">Шаблон</string>
+     <string formatted="true" name="duration_format">%d мин</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Пусни с CloudStream</string>
+     <string name="title_home">Начало</string>
+     <string name="title_search">Търсене</string>
+diff --git a/app/src/main/res/values-b+bn/strings.xml b/app/src/main/res/values-b+bn/strings.xml
+index 19974c7..dc6175f 100644
+--- a/app/src/main/res/values-b+bn/strings.xml
++++ b/app/src/main/res/values-b+bn/strings.xml
+@@ -18,7 +18,7 @@
+     <string name="new_update_format" formatted="true">নতুন আপডেট এসেছে! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">ফিলার</string>
+     <string name="duration_format" formatted="true">%d মিনিট</string>
+-    <string name="app_name">ক্লাউডস্ট্রিম</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_search">খুঁজুন</string>
+     <string name="title_downloads">ডাউনলোডসমূহ</string>
+     <string name="title_settings">সেটিংস</string>
+diff --git a/app/src/main/res/values-b+ca/strings.xml b/app/src/main/res/values-b+ca/strings.xml
+index 621243c..d0938fd 100644
+--- a/app/src/main/res/values-b+ca/strings.xml
++++ b/app/src/main/res/values-b+ca/strings.xml
+@@ -24,7 +24,7 @@
+     <string name="new_update_format" formatted="true">S\'ha trobat una nova actualització!\n%1$s-&gt;%2$s</string>
+     <string name="filler" formatted="true">Episodi especial</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Reprodueix amb CloudStream</string>
+     <string name="title_home">Inici</string>
+     <string name="title_search">Cercar</string>
+diff --git a/app/src/main/res/values-b+ckb/strings.xml b/app/src/main/res/values-b+ckb/strings.xml
+index b38a795..62ff3a7 100644
+--- a/app/src/main/res/values-b+ckb/strings.xml
++++ b/app/src/main/res/values-b+ckb/strings.xml
+@@ -23,7 +23,7 @@
+     <string name="new_update_format" formatted="true">نوێکاری نوێ دۆزرایەوە!\n%1$s-&gt;%2$s</string>
+     <string name="filler" formatted="true">فیلەر</string>
+     <string name="duration_format" formatted="true">min%d</string>
+-    <string name="app_name">کلاود ستریم</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">سەرەکی</string>
+     <string name="title_search">گەڕان</string>
+     <string name="title_downloads">داونڵۆد</string>
+diff --git a/app/src/main/res/values-b+cs/strings.xml b/app/src/main/res/values-b+cs/strings.xml
+index 4747ecf..a6352bd 100644
+--- a/app/src/main/res/values-b+cs/strings.xml
++++ b/app/src/main/res/values-b+cs/strings.xml
+@@ -19,7 +19,7 @@
+     <string name="new_update_format" formatted="true">Nalezena nová aktualizace! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Výplň</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Domů</string>
+     <string name="title_search">Hledat</string>
+     <string name="title_downloads">Stahování</string>
+diff --git a/app/src/main/res/values-b+de/strings.xml b/app/src/main/res/values-b+de/strings.xml
+index f00db9a..b41a844 100644
+--- a/app/src/main/res/values-b+de/strings.xml
++++ b/app/src/main/res/values-b+de/strings.xml
+@@ -30,7 +30,7 @@
+     <string name="new_update_format" formatted="true">Neues Update gefunden! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Füller</string>
+     <string name="duration_format" formatted="true">%d Min</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Mit CloudStream abspielen</string>
+     <string name="title_home">Startseite</string>
+     <string name="title_search">Suche</string>
+diff --git a/app/src/main/res/values-b+el/strings.xml b/app/src/main/res/values-b+el/strings.xml
+index a38ee26..89985de 100644
+--- a/app/src/main/res/values-b+el/strings.xml
++++ b/app/src/main/res/values-b+el/strings.xml
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Αρχική</string>
+     <string name="title_search">Αναζήτηση</string>
+     <string name="title_downloads">Λήψεις</string>
+diff --git a/app/src/main/res/values-b+eo/strings.xml b/app/src/main/res/values-b+eo/strings.xml
+index 5dea7b2..488e9e5 100644
+--- a/app/src/main/res/values-b+eo/strings.xml
++++ b/app/src/main/res/values-b+eo/strings.xml
+@@ -85,7 +85,7 @@
+     <string name="next_episode_time_min_format" formatted="true">%dm</string>
+     <string name="new_update_format" formatted="true">Nova ĝisdatigo trovita! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Speciala epizodo</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="download_started">Elŝuto Komencite</string>
+     <string name="reload_error">Reprovi konekton…</string>
+     <string name="stream">Elsendfluo</string>
+diff --git a/app/src/main/res/values-b+es/strings.xml b/app/src/main/res/values-b+es/strings.xml
+index df6b181..c70ea73 100644
+--- a/app/src/main/res/values-b+es/strings.xml
++++ b/app/src/main/res/values-b+es/strings.xml
+@@ -107,7 +107,7 @@
+     <string name="cast_format" formatted="true">Reparto: %s</string>
+     <string name="filler" formatted="true">Relleno</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Reproducir con Cloudstream</string>
+     <string name="title_home">Inicio</string>
+     <string name="title_search">Buscar</string>
+diff --git a/app/src/main/res/values-b+fa/strings.xml b/app/src/main/res/values-b+fa/strings.xml
+index 1018e9a..9ea8e19 100644
+--- a/app/src/main/res/values-b+fa/strings.xml
++++ b/app/src/main/res/values-b+fa/strings.xml
+@@ -88,7 +88,7 @@
+     <string name="preview_background_img_des">پیش‌نمایش پس‌زمینه</string>
+     <string name="filler" formatted="true">فیلتر</string>
+     <string name="duration_format" formatted="true">%d دقیقه</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">پخش با CloudStream</string>
+     <string name="title_home">خانه</string>
+     <string name="title_search">جست‌وجو</string>
+diff --git a/app/src/main/res/values-b+fr/strings.xml b/app/src/main/res/values-b+fr/strings.xml
+index 39556af..d782920 100644
+--- a/app/src/main/res/values-b+fr/strings.xml
++++ b/app/src/main/res/values-b+fr/strings.xml
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Accueil</string>
+     <string name="title_search">Rechercher</string>
+     <string name="title_downloads">Téléchargements</string>
+diff --git a/app/src/main/res/values-b+gl/strings.xml b/app/src/main/res/values-b+gl/strings.xml
+index e3775b0..6a834a7 100644
+--- a/app/src/main/res/values-b+gl/strings.xml
++++ b/app/src/main/res/values-b+gl/strings.xml
+@@ -45,7 +45,7 @@
+     <string name="subs_window_color">Cor de Ventá</string>
+     <string name="continue_watching">Continuar Vendo</string>
+     <string name="rated_format" formatted="true">Nota: %.1f</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Inicio</string>
+     <string name="title_downloads">Descarga</string>
+     <string name="result_share">Compartir</string>
+diff --git a/app/src/main/res/values-b+hi/strings.xml b/app/src/main/res/values-b+hi/strings.xml
+index f5717d2..368ba4b 100644
+--- a/app/src/main/res/values-b+hi/strings.xml
++++ b/app/src/main/res/values-b+hi/strings.xml
+@@ -149,7 +149,7 @@
+     <string name="search_hint_site" formatted="true">%s पर खोजें…</string>
+     <string name="search_hint">खोजें…</string>
+     <string name="duration_format" formatted="true">%d मिनट</string>
+-    <string name="app_name">क्लाउडस्ट्रीम</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">क्लाउडस्ट्रीम के साथ चलाएं</string>
+     <string name="duplicate_message_multiple" formatted="true">आपकी लाइब्रेरी में संभावित डुप्लिकेट आइटम पाए गए हैं: \n \n%s \n \nक्या आप किसी भी तरह इस आइटम को जोड़ना चाहेंगे, मौजूदा आइटम को बदलना चाहेंगे, या कार्रवाई रद्द करना चाहेंगे?</string>
+     <string name="enter_pin_with_name" formatted="true">%s के लिए पिन दर्ज करें</string>
+diff --git a/app/src/main/res/values-b+hr/strings.xml b/app/src/main/res/values-b+hr/strings.xml
+index a64e206..8366cd7 100644
+--- a/app/src/main/res/values-b+hr/strings.xml
++++ b/app/src/main/res/values-b+hr/strings.xml
+@@ -22,7 +22,7 @@
+     <string name="new_update_format" formatted="true">Pronađeno je novo ažuriranje! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Umetak</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Pokreni s CloudStreamom</string>
+     <string name="title_home">Početna stranica</string>
+     <string name="title_search">Traži</string>
+diff --git a/app/src/main/res/values-b+hu/strings.xml b/app/src/main/res/values-b+hu/strings.xml
+index b753ead..f0966af 100644
+--- a/app/src/main/res/values-b+hu/strings.xml
++++ b/app/src/main/res/values-b+hu/strings.xml
+@@ -13,7 +13,7 @@
+     <string name="new_update_format" formatted="true">Új frissítés található! \n%1$s -&gt; %2$s</string>
+     <string name="duration_format" formatted="true">%d perc</string>
+     <string name="app_dub_sub_episode_text_format" formatted="true">%1$sEp%2$d</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="preview_background_img_des">Háttér Előnézet</string>
+     <string name="download_failed">Letöltés sikertelen</string>
+     <string name="download">Letöltés</string>
+diff --git a/app/src/main/res/values-b+in/strings.xml b/app/src/main/res/values-b+in/strings.xml
+index e9df06f..0c873b2 100644
+--- a/app/src/main/res/values-b+in/strings.xml
++++ b/app/src/main/res/values-b+in/strings.xml
+@@ -18,7 +18,7 @@
+     <string name="new_update_format" formatted="true">Pembaruan ditemukan!\n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Filler</string>
+     <string name="duration_format" formatted="true">%d mnt</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Beranda</string>
+     <string name="title_search">Cari</string>
+     <string name="title_downloads">Unduhan</string>
+diff --git a/app/src/main/res/values-b+it/strings.xml b/app/src/main/res/values-b+it/strings.xml
+index db181ba..ac7c5b0 100644
+--- a/app/src/main/res/values-b+it/strings.xml
++++ b/app/src/main/res/values-b+it/strings.xml
+@@ -22,7 +22,7 @@
+     <string name="new_update_format" formatted="true">Nuovo aggiornamento trovato! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Filler</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <!-- <string name="app_name">CloudStream</string> -->
++    <!-- <string name="app_name">Nuvios</string> -->
+     <string name="play_with_app_name">Riproduci con CloudStream</string>
+     <string name="title_home">Home</string>
+     <string name="title_search">Cerca</string>
+@@ -448,7 +448,7 @@
+     <string name="history">Cronologia</string>
+     <string name="enable_skip_op_from_database_des">Mostra popup di salto per apertura/fine</string>
+     <string name="clipboard_too_large">Testo troppo lungo. Impossibile salvare negli appunti.</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="automatic_plugin_download">Scarica automaticamente i plugins</string>
+     <string name="update_notification_failed">Impossibile installare la nuova versione dell\'app</string>
+     <string name="episode_sync_settings">Aggiorna progresso di visione</string>
+diff --git a/app/src/main/res/values-b+iw/strings.xml b/app/src/main/res/values-b+iw/strings.xml
+index aa53c35..daeea98 100644
+--- a/app/src/main/res/values-b+iw/strings.xml
++++ b/app/src/main/res/values-b+iw/strings.xml
+@@ -9,7 +9,7 @@
+     <string name="new_update_format" formatted="true">נמצא עדכון חדש! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">סינון</string>
+     <string name="duration_format" formatted="true">%d דקות</string>
+-    <string name="app_name">קלאודסטרים</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">בית</string>
+     <string name="title_search">חיפוש</string>
+     <string name="title_downloads">הורדות</string>
+diff --git a/app/src/main/res/values-b+ja/strings.xml b/app/src/main/res/values-b+ja/strings.xml
+index c7bdb4e..b524e42 100644
+--- a/app/src/main/res/values-b+ja/strings.xml
++++ b/app/src/main/res/values-b+ja/strings.xml
+@@ -53,7 +53,7 @@
+     <string name="result_tags">ジャンル</string>
+     <string name="play_movie_button">映画を再生</string>
+     <string name="pick_subtitle">字幕</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">CloudStreamで再生</string>
+     <string name="browser">ブラウザ</string>
+     <string name="type_completed">完成</string>
+diff --git a/app/src/main/res/values-b+kn/strings.xml b/app/src/main/res/values-b+kn/strings.xml
+index ba6da78..d0b129c 100644
+--- a/app/src/main/res/values-b+kn/strings.xml
++++ b/app/src/main/res/values-b+kn/strings.xml
+@@ -77,7 +77,7 @@
+     <string name="play_movie_button">ಚಲನಚಿತ್ರವನ್ನು ಪ್ಲೇ ಮಾಡಿ</string>
+     <string name="preview_background_img_des">ಪ್ರಿವ್ಯೂ ಹಿನ್ನೆಲೆ</string>
+     <string name="next_episode">ಮುಂದಿನ ಸಂಚಿಕೆ</string>
+-    <string name="app_name">ಕ್ಲೌಡ್ ಸ್ಟ್ರೀಮ್</string>
++    <string name="app_name">Nuvios</string>
+     <string name="downloading">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</string>
+     <string name="stream">ಸ್ಟ್ರೀಮ್</string>
+     <string name="result_share">ಶೇರ್</string>
+diff --git a/app/src/main/res/values-b+ko/strings.xml b/app/src/main/res/values-b+ko/strings.xml
+index 966d130..05f1ced 100644
+--- a/app/src/main/res/values-b+ko/strings.xml
++++ b/app/src/main/res/values-b+ko/strings.xml
+@@ -13,7 +13,7 @@
+     <string name="rated_format" formatted="true">평점: %.1f</string>
+     <string name="new_update_format" formatted="true">새로운 업데이트! \n%1$s -&gt; %2$s</string>
+     <string name="duration_format" formatted="true">%d분</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">CloudStream으로 재생</string>
+     <string name="title_home">홈</string>
+     <string name="title_downloads">다운로드</string>
+diff --git a/app/src/main/res/values-b+lt/strings.xml b/app/src/main/res/values-b+lt/strings.xml
+index ff92ac0..63b2c52 100644
+--- a/app/src/main/res/values-b+lt/strings.xml
++++ b/app/src/main/res/values-b+lt/strings.xml
+@@ -127,7 +127,7 @@
+     <string name="action_remove_watching">Pašalinti</string>
+     <string name="action_open_watching">Daugiau informacijos</string>
+     <string name="type_on_hold">Sustabdyta</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="home_play">Paleisti</string>
+     <string name="livestreams">Gyvos transliacijos</string>
+     <string name="apk_installer_settings">APK įrašymas</string>
+diff --git a/app/src/main/res/values-b+lv/strings.xml b/app/src/main/res/values-b+lv/strings.xml
+index a8ecaa6..31a85f3 100644
+--- a/app/src/main/res/values-b+lv/strings.xml
++++ b/app/src/main/res/values-b+lv/strings.xml
+@@ -14,7 +14,7 @@
+     <string name="rated_format" formatted="true">Lidzīgi: %.1f</string>
+     <string name="new_update_format" formatted="true">Jauns atjauninājums atrasts! \n%1$s -&gt; %2$s</string>
+     <string name="duration_format" formatted="true">%d galvenais</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Atskaņo ar cloudstream</string>
+     <string name="title_home">Sākums</string>
+     <string name="title_search">Meklēt</string>
+diff --git a/app/src/main/res/values-b+mk/strings.xml b/app/src/main/res/values-b+mk/strings.xml
+index 60cf274..a21cc04 100644
+--- a/app/src/main/res/values-b+mk/strings.xml
++++ b/app/src/main/res/values-b+mk/strings.xml
+@@ -5,7 +5,7 @@
+     <string name="rated_format" formatted="true">Оценето: %.1f</string>
+     <string name="new_update_format" formatted="true">Пронајдена нова верзија!\n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Филтер</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Дома</string>
+     <string name="title_search">Барај</string>
+     <string name="title_downloads">Преземања</string>
+diff --git a/app/src/main/res/values-b+ml/strings.xml b/app/src/main/res/values-b+ml/strings.xml
+index 6c5dd3d..9d2c5ad 100644
+--- a/app/src/main/res/values-b+ml/strings.xml
++++ b/app/src/main/res/values-b+ml/strings.xml
+@@ -4,7 +4,7 @@
+     <string name="player_speed_text_format" formatted="true">വേഗം (%.2fx)</string>
+     <string name="rated_format" formatted="true">റേറ്റിംഗ്: %.1f</string>
+     <string name="new_update_format" formatted="true">പുതിയ അപ്ഡേറ്റ്! \n%1$s -&gt; %2$s</string>
+-    <string name="app_name">ക്ലൗഡ് സ്ട്രീം</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">ഹോം</string>
+     <string name="title_search">തിരയുക</string>
+     <string name="title_downloads">ഡൗൺലോഡ്സ്</string>
+diff --git a/app/src/main/res/values-b+ms/strings.xml b/app/src/main/res/values-b+ms/strings.xml
+index 8843b25..3fda43e 100644
+--- a/app/src/main/res/values-b+ms/strings.xml
++++ b/app/src/main/res/values-b+ms/strings.xml
+@@ -81,7 +81,7 @@
+     <string name="subs_font">Teks</string>
+     <string name="chromecast_subtitles_settings_des">Tetapan Sari kata Chromecast</string>
+     <string name="play_episode">Pasang Episod</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="type_completed">Selesai</string>
+     <string name="search_provider_text_types">Carian mengikut jenis</string>
+     <string name="title_search">Carian</string>
+diff --git a/app/src/main/res/values-b+mt/strings.xml b/app/src/main/res/values-b+mt/strings.xml
+index 8f8bf6c..02beb17 100644
+--- a/app/src/main/res/values-b+mt/strings.xml
++++ b/app/src/main/res/values-b+mt/strings.xml
+@@ -20,7 +20,7 @@
+     <string name="rated_format" formatted="true">Klassifikazzjoni: %.1f</string>
+     <string name="new_update_format" formatted="true">Aġġornament ġdid misjub! \n%1$s -&gt; %2$s</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Ara bil-CloudStream</string>
+     <string name="title_home">Dar</string>
+     <string name="title_search">Fittex</string>
+diff --git a/app/src/main/res/values-b+my/strings.xml b/app/src/main/res/values-b+my/strings.xml
+index d360d09..2a9614c 100644
+--- a/app/src/main/res/values-b+my/strings.xml
++++ b/app/src/main/res/values-b+my/strings.xml
+@@ -14,7 +14,7 @@
+     <string name="new_update_format" formatted="true">အပ်ဒိတ်အသစ်! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">စစ်ထုတ်မှု</string>
+     <string name="duration_format" formatted="true">%d မိနစ်</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">CloudStream ဖြင့်ကြည့်ရန်</string>
+     <string name="title_home">ပင်မ</string>
+     <string name="title_search">ရှာရန်</string>
+diff --git a/app/src/main/res/values-b+ne/strings.xml b/app/src/main/res/values-b+ne/strings.xml
+index 49e5a93..30a3a3a 100644
+--- a/app/src/main/res/values-b+ne/strings.xml
++++ b/app/src/main/res/values-b+ne/strings.xml
+@@ -18,7 +18,7 @@
+     <string name="new_update_format" formatted="true">नयाँ अपडेट भेटियो! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">फिलर</string>
+     <string name="duration_format" formatted="true">%d मिनेट</string>
+-    <string name="app_name">क्लाउडस्ट्रीम</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">क्लाउडस्ट्रीममा प्ले गर्नुहोस्</string>
+     <string name="title_home">होम्</string>
+     <string name="title_search">खोजी</string>
+diff --git a/app/src/main/res/values-b+nl/strings.xml b/app/src/main/res/values-b+nl/strings.xml
+index feec842..f2f7917 100644
+--- a/app/src/main/res/values-b+nl/strings.xml
++++ b/app/src/main/res/values-b+nl/strings.xml
+@@ -22,7 +22,7 @@
+     <string name="new_update_format" formatted="true">Nieuwe update gevonden! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Filler</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Afspelen met CloudStream</string>
+     <string name="title_home">Home</string>
+     <string name="title_search">Zoeken</string>
+diff --git a/app/src/main/res/values-b+nn/strings.xml b/app/src/main/res/values-b+nn/strings.xml
+index b29e142..d8d5e0c 100644
+--- a/app/src/main/res/values-b+nn/strings.xml
++++ b/app/src/main/res/values-b+nn/strings.xml
+@@ -165,7 +165,7 @@
+     <string name="home_more_info">Meir informasjon</string>
+     <string name="sort_close">Lukk</string>
+     <string name="player_speed_text_format" formatted="true">Avspelinghastigheit (%.2fx)</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="next_episode_time_min_format" formatted="true">%dm</string>
+     <string name="updates_settings_des">Sjå etter nye oppdateringar automatisk ved oppstart</string>
+     <string name="discord">Bli med i Discord</string>
+diff --git a/app/src/main/res/values-b+no/strings.xml b/app/src/main/res/values-b+no/strings.xml
+index 7d309a2..6ba2db0 100644
+--- a/app/src/main/res/values-b+no/strings.xml
++++ b/app/src/main/res/values-b+no/strings.xml
+@@ -13,7 +13,7 @@
+     <string name="player_speed_text_format" formatted="true">Avspillingshastighet (%.2fx)</string>
+     <string name="rated_format" formatted="true">Vurdert: %.1f</string>
+     <string name="new_update_format" formatted="true">Ny oppdatering funnet! \n%1$s -&gt; %2$s</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Hjem</string>
+     <string name="title_search">Søk</string>
+     <string name="title_downloads">Nedlastinger</string>
+diff --git a/app/src/main/res/values-b+pl/strings.xml b/app/src/main/res/values-b+pl/strings.xml
+index 2b5414f..503e339 100644
+--- a/app/src/main/res/values-b+pl/strings.xml
++++ b/app/src/main/res/values-b+pl/strings.xml
+@@ -13,7 +13,7 @@
+     <string name="go_back_img_des">Wstecz</string>
+     <string name="home_change_provider_img_des">Zmień źródło</string>
+     <string name="preview_background_img_des">Pogląd tła</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Główna</string>
+     <string name="title_search">Szukaj</string>
+     <string name="title_downloads">Pobrane</string>
+diff --git a/app/src/main/res/values-b+pt+BR/strings.xml b/app/src/main/res/values-b+pt+BR/strings.xml
+index e5882d7..19b318f 100644
+--- a/app/src/main/res/values-b+pt+BR/strings.xml
++++ b/app/src/main/res/values-b+pt+BR/strings.xml
+@@ -23,7 +23,7 @@
+     <string name="new_update_format" formatted="true">Nova atualização encontrada! \n%1$s → %2$s</string>
+     <string name="filler" formatted="true">Preenchimento</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Início</string>
+     <string name="title_search">Pesquisar</string>
+     <string name="title_downloads">Downloads</string>
+diff --git a/app/src/main/res/values-b+pt/strings.xml b/app/src/main/res/values-b+pt/strings.xml
+index 960a91d..54bdb6b 100644
+--- a/app/src/main/res/values-b+pt/strings.xml
++++ b/app/src/main/res/values-b+pt/strings.xml
+@@ -20,7 +20,7 @@
+     <string name="rated_format" formatted="true">Classificado: %.1f</string>
+     <string name="new_update_format" formatted="true">Nova atualização encontrada! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Preenchimento</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Assistir com o CloudStream</string>
+     <string name="title_home">Início</string>
+     <string name="title_search">Pesquisar</string>
+diff --git a/app/src/main/res/values-b+qt/strings.xml b/app/src/main/res/values-b+qt/strings.xml
+index 6bbb0dd..58238b6 100644
+--- a/app/src/main/res/values-b+qt/strings.xml
++++ b/app/src/main/res/values-b+qt/strings.xml
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+     <!-- For true intellectuals -->
+-    <string name="app_name">aauugghhaauuh</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">ooh</string>
+     <string name="title_search">oouuh</string>
+     <string name="title_downloads">ouuhhuhooh ooh</string>
+diff --git a/app/src/main/res/values-b+ro/strings.xml b/app/src/main/res/values-b+ro/strings.xml
+index b185264..396a0d5 100644
+--- a/app/src/main/res/values-b+ro/strings.xml
++++ b/app/src/main/res/values-b+ro/strings.xml
+@@ -22,7 +22,7 @@
+     <string name="new_update_format" formatted="true">Actualizare nouă găsită! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Filler</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <!-- <string name="app_name">CloudStream</string> -->
++    <!-- <string name="app_name">Nuvios</string> -->
+     <string name="title_home">Prima pagină</string>
+     <string name="title_search">Căutare</string>
+     <string name="title_downloads">Descărcări</string>
+@@ -363,7 +363,7 @@
+     <string name="history">Istoric</string>
+     <string name="action_mark_as_watched">Marcați ca vizionat</string>
+     <string name="autoplay_next_settings">Redă automat următorul episod</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_trailer_button">Vizionează trailerul</string>
+     <string name="update_started">Actualizarea a început</string>
+     <string name="episode_sync_settings">Actualizați progresul ceasului</string>
+diff --git a/app/src/main/res/values-b+ru/strings.xml b/app/src/main/res/values-b+ru/strings.xml
+index ff15190..aee6acd 100644
+--- a/app/src/main/res/values-b+ru/strings.xml
++++ b/app/src/main/res/values-b+ru/strings.xml
+@@ -36,7 +36,7 @@
+     <string name="rated_format" formatted="true">Оценили: %.1f</string>
+     <string name="new_update_format" formatted="true">Новое обновление найдено! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Заполнитель</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="action_remove_from_bookmarks">Убрать</string>
+     <string name="app_dub_sub_episode_text_format" formatted="true">%1$s Ep %2$d</string>
+     <string name="play_with_app_name">Смотреть с CloudStream</string>
+diff --git a/app/src/main/res/values-b+sk/strings.xml b/app/src/main/res/values-b+sk/strings.xml
+index f48b271..5bbb2af 100644
+--- a/app/src/main/res/values-b+sk/strings.xml
++++ b/app/src/main/res/values-b+sk/strings.xml
+@@ -11,7 +11,7 @@
+     <string name="result_open_in_browser">Otvoriť v prehliadači</string>
+     <string name="skip_loading">Preskočiť načítavanie</string>
+     <string name="cast_format" formatted="true">Hrajú: %s</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="result_poster_img_des">Plagát</string>
+     <string name="next_episode_time_day_format" formatted="true">%1$dd %2$dh %3$dm</string>
+     <string name="next_episode_time_min_format" formatted="true">%dm</string>
+diff --git a/app/src/main/res/values-b+so/strings.xml b/app/src/main/res/values-b+so/strings.xml
+index 8a8f290..b29b07b 100644
+--- a/app/src/main/res/values-b+so/strings.xml
++++ b/app/src/main/res/values-b+so/strings.xml
+@@ -22,7 +22,7 @@
+     <string name="title_settings">Habaynta</string>
+     <string name="filler" formatted="true">Buuxiye</string>
+     <string name="home_change_provider_img_des">Beddel qaybiyaha</string>
+-    <string name="app_name">Cloudstream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="player_speed_text_format" formatted="true">Xawaaraha (%.2fx)</string>
+     <string name="duration_format" formatted="true">%d dqq</string>
+     <string name="title_home">Kadinka</string>
+diff --git a/app/src/main/res/values-b+sq/strings.xml b/app/src/main/res/values-b+sq/strings.xml
+index d083809..36a9159 100644
+--- a/app/src/main/res/values-b+sq/strings.xml
++++ b/app/src/main/res/values-b+sq/strings.xml
+@@ -24,7 +24,7 @@
+     <string name="new_update_format" formatted="true">U gjet update i ri!\n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Filler</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Luaj me CloudStream</string>
+     <string name="title_home">Kryefaqja</string>
+     <string name="title_search">Kërko</string>
+diff --git a/app/src/main/res/values-b+sv/strings.xml b/app/src/main/res/values-b+sv/strings.xml
+index d4ac267..cf66620 100644
+--- a/app/src/main/res/values-b+sv/strings.xml
++++ b/app/src/main/res/values-b+sv/strings.xml
+@@ -3,7 +3,7 @@
+     <string name="rated_format">Betygsatt: %.1f</string>
+     <string name="player_speed_text_format">Hastighet (%.2fx)</string>
+     <string name="new_update_format">Ny uppdatering hittad! \n%1$s -&gt; %2$s</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Hem</string>
+     <string name="title_search">Sök</string>
+     <string name="title_downloads">Nerladdningar</string>
+diff --git a/app/src/main/res/values-b+ta/strings.xml b/app/src/main/res/values-b+ta/strings.xml
+index 2537eba..16143a3 100644
+--- a/app/src/main/res/values-b+ta/strings.xml
++++ b/app/src/main/res/values-b+ta/strings.xml
+@@ -133,7 +133,7 @@
+     <string name="category_account">கணக்குகள் மற்றும் பாதுகாப்பு</string>
+     <string name="hls_playlist">எச்.எல்.எச் பிளேலிச்ட்</string>
+     <string name="skip_type_mixed_ed">கலப்பு முடிவு</string>
+-    <string name="app_name">கிளவுட்ச்ட்ரீம்</string>
++    <string name="app_name">Nuvios</string>
+     <string name="benene_count_text_none">பெனின்கள் எதுவும் கொடுக்கப்படவில்லை</string>
+     <string name="eigengraumode_settings">பிளேபேக் விரைவு</string>
+     <string name="swipe_to_seek_settings">தேட ச்வைப்</string>
+diff --git a/app/src/main/res/values-b+tl/strings.xml b/app/src/main/res/values-b+tl/strings.xml
+index 4ed229c..2d2fecb 100644
+--- a/app/src/main/res/values-b+tl/strings.xml
++++ b/app/src/main/res/values-b+tl/strings.xml
+@@ -16,7 +16,7 @@
+     <string name="player_speed_text_format" formatted="true">Bilis (%.2fx)</string>
+     <string name="rated_format" formatted="true">Rated: %.1f</string>
+     <string name="new_update_format" formatted="true">Bagong update! \n%1$s -&gt; %2$s</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="title_home">Home</string>
+     <string name="title_search">Maghanap</string>
+     <string name="title_downloads">Mga Downloads</string>
+diff --git a/app/src/main/res/values-b+tr/strings.xml b/app/src/main/res/values-b+tr/strings.xml
+index 17515a7..c9e5683 100644
+--- a/app/src/main/res/values-b+tr/strings.xml
++++ b/app/src/main/res/values-b+tr/strings.xml
+@@ -22,7 +22,7 @@
+     <string name="new_update_format" formatted="true">Yeni güncelleme bulundu! \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Dolgu</string>
+     <string name="duration_format" formatted="true">%d dakika</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">CloudStream ile oynat</string>
+     <string name="title_home">Ana sayfa</string>
+     <string name="title_search">Ara</string>
+diff --git a/app/src/main/res/values-b+uk/strings.xml b/app/src/main/res/values-b+uk/strings.xml
+index d8b27c2..f46cd0a 100644
+--- a/app/src/main/res/values-b+uk/strings.xml
++++ b/app/src/main/res/values-b+uk/strings.xml
+@@ -88,7 +88,7 @@
+     <string name="swipe_to_change_settings_des">Проведіть угору або вниз із лівого або правого боку, щоби змінити яскравість або гучність</string>
+     <string name="autoplay_next_settings_des">Відтворювати наступний епізод після закінчення поточного</string>
+     <string name="title_home">Головна</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="filler" formatted="true">Філлер</string>
+     <string name="play_with_app_name">Відтворити в CloudStream</string>
+     <string name="stream">Мережева трансляція</string>
+diff --git a/app/src/main/res/values-b+ur/strings.xml b/app/src/main/res/values-b+ur/strings.xml
+index 94728e2..9f42468 100644
+--- a/app/src/main/res/values-b+ur/strings.xml
++++ b/app/src/main/res/values-b+ur/strings.xml
+@@ -16,7 +16,7 @@
+     <string name="next_episode_time_day_format" formatted="true">%1$d دن %2$d گھنٹے %3$d منٹ</string>
+     <string name="next_episode_time_hour_format" formatted="true">%1$d گھنٹے %2$d منٹ</string>
+     <string name="next_episode_time_min_format" formatted="true">%d منٹ</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">CloudStream کے ساتھ چلائیں</string>
+     <string name="title_home">ہوم</string>
+     <string name="title_search">تلاش کریں</string>
+diff --git a/app/src/main/res/values-b+vi/strings.xml b/app/src/main/res/values-b+vi/strings.xml
+index 4ff76b1..12bc69b 100644
+--- a/app/src/main/res/values-b+vi/strings.xml
++++ b/app/src/main/res/values-b+vi/strings.xml
+@@ -23,7 +23,7 @@
+     <string name="new_update_format" formatted="true">Đã tìm thấy bản cập nhật mới!\n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Bộ lọc</string>
+     <string name="duration_format" formatted="true">%d phút</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Phát bằng CloudStream</string>
+     <string name="title_home">Trang chủ</string>
+     <string name="title_search">Tìm kiếm</string>
+diff --git a/app/src/main/res/values-b+zh+TW/strings.xml b/app/src/main/res/values-b+zh+TW/strings.xml
+index cfd8adf..029d640 100644
+--- a/app/src/main/res/values-b+zh+TW/strings.xml
++++ b/app/src/main/res/values-b+zh+TW/strings.xml
+@@ -22,7 +22,7 @@
+     <string name="new_update_format" formatted="true">發現新版本！ \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">填充</string>
+     <string name="duration_format" formatted="true">%d 分鐘</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">使用 CloudStream 播放</string>
+     <string name="title_home">主畫面</string>
+     <string name="title_search">搜尋</string>
+diff --git a/app/src/main/res/values-b+zh/strings.xml b/app/src/main/res/values-b+zh/strings.xml
+index d681506..1d36d3f 100644
+--- a/app/src/main/res/values-b+zh/strings.xml
++++ b/app/src/main/res/values-b+zh/strings.xml
+@@ -22,7 +22,7 @@
+     <string name="new_update_format" formatted="true">发现新版本！ \n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">填充</string>
+     <string name="duration_format" formatted="true">%d 分钟</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">使用 CloudStream 播放</string>
+     <string name="title_home">主页</string>
+     <string name="title_search">搜索</string>
+diff --git a/app/src/main/res/values-lo/strings.xml b/app/src/main/res/values-lo/strings.xml
+index c1a3daa..2f54baa 100644
+--- a/app/src/main/res/values-lo/strings.xml
++++ b/app/src/main/res/values-lo/strings.xml
+@@ -24,7 +24,7 @@
+     <string name="new_update_format" formatted="true">ພົບການອັບເດດໃໝ່!\n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">ເນື້ອຫາເສີມ (Filler)</string>
+     <string name="duration_format" formatted="true">%d ນາທີ</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">ຫຼິ້ນດ້ວຍ CloudStream</string>
+     <string name="title_home">ໜ້າຫຼັກ</string>
+     <string name="title_search">ຄົ້ນຫາ</string>
+diff --git a/app/src/main/res/values/colors.xml b/app/src/main/res/values/colors.xml
+index 48b6923..02c8772 100644
+--- a/app/src/main/res/values/colors.xml
++++ b/app/src/main/res/values/colors.xml
+@@ -1,11 +1,11 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+-    <color name="colorPrimary">#3d50fa</color>
++    <color name="colorPrimary">#2dd4bf</color>
+     <color name="colorPrimarySecond">@color/colorPrimary</color>
+     <color name="colorSearch">#303135</color> <!--#3444D1 @color/itemBackground-->
+     <color name="colorOngoing">#F53B66</color> <!--FF8181-->
+-    <color name="colorPrimaryDark">#3700B3</color>
+-    <color name="colorAccent">#3b65f5</color> <!-- 818fff-->
++    <color name="colorPrimaryDark">#0f766e</color>
++    <color name="colorAccent">#2dd4bf</color> <!-- 818fff-->
+ 
+     <color name="primaryGrayBackground">#2B2C30</color> <!--0f0f10 0E0E10 303135 2B2C30-->
+     <color name="primaryBlackBackground">#111111</color> <!--1C1C20 191a1f 19181E 202125 1C1C20-->
+@@ -18,6 +18,8 @@
+ 
+     <color name="searchColorTransparent">#1AFFFFFF</color> <!--DADADA-->
+     <color name="transparent">#00000000</color>
++    <color name="nuviosBackground">#0b0e13</color>
++    <color name="nuviosBar">#0f1319</color>
+ 
+     <color name="white">#FFF</color>
+     <color name="black">#000</color>
+@@ -30,7 +32,7 @@
+     <color name="progressBackgroundColor">#1AFFFFFF</color>
+ 
+     <color name="dubColorText">#121950</color> <!--3b65f5 f18c82 8294F1-->
+-    <color name="amoledModeLight">#121213</color>
++    <color name="amoledModeLight">#141a22</color>
+ 
+     <color name="dubColorBg">#3B65F5</color>
+     <color name="subColorText">#571711</color> <!--F53B66 FA3D79-->
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index f050ad9..33a3734 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -27,7 +27,7 @@
+     <string name="new_update_format" formatted="true">New update found!\n%1$s -&gt; %2$s</string>
+     <string name="filler" formatted="true">Filler</string>
+     <string name="duration_format" formatted="true">%d min</string>
+-    <string name="app_name">CloudStream</string>
++    <string name="app_name">Nuvios</string>
+     <string name="play_with_app_name">Play with CloudStream</string>
+     <string name="title_home">Home</string>
+     <string name="title_search">Search</string>
+diff --git a/app/src/main/res/values/styles.xml b/app/src/main/res/values/styles.xml
+index a5f8492..40c87d0 100644
+--- a/app/src/main/res/values/styles.xml
++++ b/app/src/main/res/values/styles.xml
+@@ -88,6 +88,9 @@
+     <style name="AmoledModeLight" parent="AmoledMode">
+         <item name="primaryGrayBackground">@color/amoledModeLight</item>
+         <item name="boxItemBackground">@color/amoledModeLight</item>
++        <item name="primaryBlackBackground">@color/nuviosBackground</item>
++        <item name="iconGrayBackground">@color/nuviosBar</item>
++        <item name="android:navigationBarColor">@color/nuviosBar</item>
+     </style>
+ 
+     <style name="ChipFilled" parent="@style/Widget.Material3.Chip.Filter">
+@@ -241,7 +244,7 @@
+         <item name="android:colorPrimary">@color/colorPrimary</item>
+         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+         <item name="colorAccent">@color/colorAccent</item>
+-        <item name="colorOnPrimary">@color/whiteText</item>
++        <item name="colorOnPrimary">@color/blackText</item>
+         <!-- Needed for leanback fuckery -->
+         <item name="android:colorAccent">@color/colorAccent</item>
+     </style>
