@@ -1,8 +1,24 @@
 diff --git a/app/build.gradle.kts b/app/build.gradle.kts
-index c714368..4fec599 100644
+index c714368..354e0e9 100644
 --- a/app/build.gradle.kts
 +++ b/app/build.gradle.kts
-@@ -103,10 +103,11 @@ android {
+@@ -85,6 +85,15 @@ android {
+     }
+ 
+     signingConfigs {
++        // Nuvios: a fixed key for CI builds so every new APK installs over the old one
++        System.getenv("NUVIOS_KEYSTORE")?.takeIf { File(it).exists() }?.let { ks ->
++            getByName("debug") {
++                storeFile = File(ks)
++                storePassword = "android"
++                keyAlias = "androiddebugkey"
++                keyPassword = "android"
++            }
++        }
+         // We just use SIGNING_KEY_ALIAS here since it won't change
+         // so won't kill the configuration cache.
+         if (System.getenv("SIGNING_KEY_ALIAS") != null) {
+@@ -103,10 +112,11 @@ android {
      compileSdk = libs.versions.compileSdk.get().toInt()
  
      defaultConfig {
@@ -16,7 +32,7 @@ index c714368..4fec599 100644
          versionName = libs.versions.versionName.get()
  
          manifestPlaceholders["target_sdk_version"] = libs.versions.targetSdk.get()
-@@ -119,6 +120,11 @@ android {
+@@ -119,6 +129,11 @@ android {
              "BUILD_DATE",
              "${System.currentTimeMillis()}"
          )
@@ -28,7 +44,7 @@ index c714368..4fec599 100644
          buildConfigField(
              "String",
              "SIMKL_CLIENT_ID",
-@@ -280,6 +286,10 @@ dependencies {
+@@ -280,6 +295,10 @@ dependencies {
  
      // Temp/deprecated; will be removed once extensions have time to migrate from using it
      implementation("com.google.code.gson:gson:2.11.0")

@@ -45,12 +45,12 @@ jobs:
         env:
           KS_B64: ${{ secrets.NUVIOS_KEYSTORE_B64 }}
         run: |
-          mkdir -p ~/.android
           if [ -n "$KS_B64" ]; then
-            echo "$KS_B64" | base64 -d > ~/.android/debug.keystore
+            echo "$KS_B64" | base64 -d > "$HOME/nuvios.keystore"
           else
-            cp nuvios/signing/nuvios-debug.keystore ~/.android/debug.keystore
+            cp nuvios/signing/nuvios-debug.keystore "$HOME/nuvios.keystore"
           fi
+          echo "NUVIOS_KEYSTORE=$HOME/nuvios.keystore" >> "$GITHUB_ENV"
 
       - name: APK derle
         working-directory: cs
@@ -59,6 +59,14 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleStableDebug --no-daemon
+
+      - name: İmzayı doğrula
+        run: |
+          APK=$(ls cs/app/build/outputs/apk/stable/debug/*.apk | head -1)
+          WANT=$(keytool -list -v -keystore "$HOME/nuvios.keystore" -storepass android | grep -m1 "SHA256:" | awk '{print $2}')
+          GOT=$(keytool -printcert -jarfile "$APK" | grep -m1 "SHA256:" | awk '{print $2}')
+          echo "beklenen $WANT"; echo "apk      $GOT"
+          test "$WANT" = "$GOT"
 
       - name: APK dosyasını adlandır
         run: |
