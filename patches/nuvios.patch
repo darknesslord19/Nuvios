@@ -36194,10 +36194,10 @@ HcmV?d00001
 
 diff --git a/app/src/main/assets/home/index.html b/app/src/main/assets/home/index.html
 new file mode 100644
-index 0000000..561052b
+index 0000000..1a3f528
 --- /dev/null
 +++ b/app/src/main/assets/home/index.html
-@@ -0,0 +1,1992 @@
+@@ -0,0 +1,2019 @@
 +<!DOCTYPE html>
 +<html lang="tr">
 +<head>
@@ -36887,6 +36887,12 @@ index 0000000..561052b
 +    background: rgba(196,181,253,.16); color: #cfc2ff; }
 +  .tag.cs { background: rgba(242,165,142,.16); color: var(--accent); }
 +  .tag.st { background: rgba(125,211,252,.16); color: #9ddcff; }
++  .notes { margin: 0 16px 12px; border-radius: 16px; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.22); overflow: hidden; }
++  .notes .nt { display: flex; gap: 10px; align-items: flex-start; padding: 11px 14px; border-top: 1px solid rgba(251,191,36,.14); font-size: 13px; line-height: 1.35; color: #f5deb0; }
++  .notes .nt:first-child { border-top: 0; }
++  .notes .nt svg { flex: none; width: 18px; height: 18px; margin-top: 1px; stroke: #fbbf24; }
++  .notes .nt b { color: #fff3d6; }
++  .notes .nt small { display: block; margin-top: 2px; color: #c9b48a; word-break: break-word; }
 +  .check { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,.26); display: grid; place-items: center; transition: background .15s, border-color .15s; }
 +  .check svg { width: 15px; height: 15px; stroke: var(--accent-ink); opacity: 0; transition: opacity .15s; }
 +  .row.src.on .check { background: var(--accent); border-color: transparent; }
@@ -36932,6 +36938,7 @@ index 0000000..561052b
 +    </div>
 +    <div class="loading" id="loading"><span id="loadText"></span><span class="bar-p"><i id="loadBar"></i></span></div>
 +    <div class="sources" id="sources"></div>
++    <div class="notes" id="notes" hidden></div>
 +    <div class="posters" id="posters"></div>
 +    <div class="empty" id="empty" hidden><b>Bir şey bulunamadı</b>Depolarında bu kategoriye uyan bölüm yok. Kategoriyi düzenleyip anahtar kelimeleri değiştirmeyi dene.</div>
 +    <button class="more" id="more" hidden>Daha fazla yükle</button>
@@ -37321,8 +37328,22 @@ index 0000000..561052b
 +    go('s-list');
 +    request();
 +  }
++  var NOTE_TEXT = {
++    empty: 'şu an içerik döndürmüyor. Eklentinin kataloğu boş; sorun eklentinin sunucusunda.',
++    error: 'yüklenirken hata verdi.',
++    timeout: '25 saniyede yanıt vermedi.'
++  };
++  var NOTE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>';
++  function note(src, status, detail) {
++    var box = document.getElementById('notes');
++    var n = el('div', 'nt', NOTE_ICON + '<div><b>' + esc(src) + '</b> ' + esc(NOTE_TEXT[status] || 'yüklenemedi.') +
++      (detail ? '<small>' + esc(detail) + '</small>' : '') + '</div>');
++    box.appendChild(n); box.hidden = false;
++  }
++  function clearNotes() { var box = document.getElementById('notes'); box.innerHTML = ''; box.hidden = true; }
 +  function request(fresh) {
 +    token++;
++    clearNotes();
 +    sourcesTotal = 0; sourcesDone = 0;
 +    document.getElementById('loading').hidden = false;
 +    document.getElementById('empty').hidden = true;
@@ -37346,6 +37367,7 @@ index 0000000..561052b
 +  window.onCatResults = function (t, json) {
 +    if (t !== token) return;
 +    var data; try { data = typeof json === 'string' ? JSON.parse(json) : json; } catch (e) { return; }
++    if (data && data.status) note(data.source || 'Depo', data.status, data.detail);
 +    sourcesDone++;
 +    loadText.textContent = sourcesDone + '/' + sourcesTotal + ' depo tarandı';
 +    loadBar.style.width = Math.min(100, sourcesTotal ? sourcesDone / sourcesTotal * 100 : 50) + '%';
@@ -37400,7 +37422,12 @@ index 0000000..561052b
 +    loadText.textContent = (sourcesTotal || 0) + ' depodan ' + found + ' içerik' + (fromCache ? ' · kayıtlı, yenilemek için ↻' : '');
 +    applySort();
 +    setTimeout(function () { if (t === token) document.getElementById('loading').hidden = true; }, 1500);
-+    document.getElementById('empty').hidden = found > 0;
++    var emptyEl = document.getElementById('empty');
++    emptyEl.hidden = found > 0;
++    if (!emptyEl.dataset.def) emptyEl.dataset.def = emptyEl.innerHTML;
++    emptyEl.innerHTML = !document.getElementById('notes').hidden
++      ? '<b>İçerik gelmedi</b>Seçtiğin depolar bu sefer içerik döndürmedi; yukarıdaki uyarılara bak. Başka depoları seçip tekrar dene.'
++      : emptyEl.dataset.def;
 +    if (listCat && page === 1 && found) { counts[listCat.name] = found; store('fork-category-counts-v1', counts); }
 +    document.getElementById('more').hidden = !(found > 0 && sourcesTotal > 0);
 +  };
@@ -40143,10 +40170,10 @@ index 0000000..fb25aff
 +}
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/nuvio/StremioAddons.kt b/app/src/main/java/com/lagradost/cloudstream3/nuvio/StremioAddons.kt
 new file mode 100644
-index 0000000..b6e79d0
+index 0000000..95699d2
 --- /dev/null
 +++ b/app/src/main/java/com/lagradost/cloudstream3/nuvio/StremioAddons.kt
-@@ -0,0 +1,417 @@
+@@ -0,0 +1,420 @@
 +package com.lagradost.cloudstream3.nuvio
 +
 +import android.util.Log
@@ -40489,6 +40516,9 @@ index 0000000..b6e79d0
 +            val size = pageSizes[key]?.takeIf { it > 0 } ?: 100
 +            catalog(type, id, "skip=${(page - 1) * size}")
 +        }
++        if (page <= 1 && items.isEmpty()) {
++            throw com.lagradost.cloudstream3.ErrorLoadingException("$name şu an içerik döndürmüyor (eklentinin kataloğu boş).")
++        }
 +        val canMore = cat?.extraSupported?.contains("skip") == true && items.isNotEmpty()
 +        return newHomePageResponse(request, items, canMore)
 +    }
@@ -40583,10 +40613,10 @@ index 3879ddc..944fef8 100644
          repoLock.withLock {
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt b/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt
 new file mode 100644
-index 0000000..c587be4
+index 0000000..e020d84
 --- /dev/null
 +++ b/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt
-@@ -0,0 +1,384 @@
+@@ -0,0 +1,409 @@
 +package com.lagradost.cloudstream3.ui.categories
 +
 +import android.annotation.SuppressLint
@@ -40813,15 +40843,32 @@ index 0000000..c587be4
 +            providers.map { api ->
 +                async {
 +                    semaphore.withPermit {
++                        val probe = LoadProbe()
++                        var status: String? = null
++                        var detail: String? = null
 +                        val found = try {
-+                            withTimeoutOrNull(25_000L) { loadFrom(api, spec, page) } ?: emptyList()
++                            withTimeoutOrNull(25_000L) { loadFrom(api, spec, page, probe) } ?: run {
++                                status = "timeout"
++                                emptyList()
++                            }
 +                        } catch (e: Throwable) {
++                            if (e is kotlinx.coroutines.CancellationException) throw e
 +                            logError(e)
++                            if (e.message?.contains("içerik döndürmüyor") == true) {
++                                status = "empty"
++                            } else {
++                                status = "error"
++                                detail = e.message?.take(120)
++                            }
 +                            emptyList()
 +                        }
++                        // The provider was asked and answered with nothing at all
++                        if (status == null && probe.asked > 0 && probe.received == 0 && page == 1) status = "empty"
 +                        val json = JSONObject().apply {
 +                            put("source", api.name)
 +                            put("items", JSONArray().apply { found.forEach { put(it) } })
++                            status?.let { put("status", it) }
++                            detail?.let { put("detail", it) }
 +                        }.toString()
 +                        js("window.onCatResults && onCatResults($token, ${JSONObject.quote(json)})")
 +                    }
@@ -40857,17 +40904,25 @@ index 0000000..c587be4
 +        return out.toString()
 +    }
 +
-+    private suspend fun loadFrom(api: MainAPI, spec: Spec, page: Int): List<JSONObject> {
++    /** How many sections were asked and how many items came back, before any filtering. */
++    private class LoadProbe {
++        @Volatile var asked = 0
++        @Volatile var received = 0
++    }
++
++    private suspend fun loadFrom(api: MainAPI, spec: Spec, page: Int, probe: LoadProbe = LoadProbe()): List<JSONObject> {
 +        val (sections, filterByType) = sectionsFor(api, spec)
 +        if (sections.isEmpty()) return emptyList()
 +        val wanted = kindTypes[spec.kind]
 +        val out = LinkedHashMap<String, JSONObject>()
 +        val noPoster = ArrayList<Pair<JSONObject, SearchResponse>>()
 +        for (section in sections) {
++            probe.asked++
 +            val response = api.getMainPage(
 +                page,
 +                MainPageRequest(section.name, section.data, section.horizontalImages)
 +            ) ?: continue
++            probe.received += response.items.sumOf { it.list.size }
 +            for (list in response.items) {
 +                for (item in list.list) {
 +                    if (filterByType && wanted != null && item.type != null && item.type !in wanted) continue
