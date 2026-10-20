@@ -36161,10 +36161,10 @@ HcmV?d00001
 
 diff --git a/app/src/main/assets/home/index.html b/app/src/main/assets/home/index.html
 new file mode 100644
-index 0000000..a9bd72c
+index 0000000..73a0ca7
 --- /dev/null
 +++ b/app/src/main/assets/home/index.html
-@@ -0,0 +1,1771 @@
+@@ -0,0 +1,1990 @@
 +<!DOCTYPE html>
 +<html lang="tr">
 +<head>
@@ -36841,6 +36841,33 @@ index 0000000..a9bd72c
 +  .tv .field input:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
 +  .tv .icon-btn:focus { background: rgba(255,255,255,.12); }
 +
++  /* ---------- repo picker ---------- */
++  .picklist { margin-bottom: 14px; }
++  .picklist .row.src { min-height: 68px; cursor: pointer; transition: background .15s; }
++  .picklist .row.src:active { background: rgba(255,255,255,.04); }
++  .src-flag { flex: none; width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; font-size: 22px; line-height: 1; background: var(--field); }
++  .src-flag.all { background: var(--accent); color: var(--accent-ink); }
++  .src-flag svg { width: 21px; height: 21px; }
++  .row.src .t b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
++  .row.src .t span { display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
++  .tag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 800; font-style: normal; letter-spacing: .04em; vertical-align: 2px;
++    background: rgba(196,181,253,.16); color: #cfc2ff; }
++  .tag.cs { background: rgba(242,165,142,.16); color: var(--accent); }
++  .check { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,.26); display: grid; place-items: center; transition: background .15s, border-color .15s; }
++  .check svg { width: 15px; height: 15px; stroke: var(--accent-ink); opacity: 0; transition: opacity .15s; }
++  .row.src.on .check { background: var(--accent); border-color: transparent; }
++  .row.src.on .check svg { opacity: 1; }
++  .row.src.dim .t, .row.src.dim .src-flag { opacity: .5; }
++  .row.src .go { flex: none; color: var(--muted); display: grid; place-items: center; }
++  .pick-go { position: sticky; bottom: 0; z-index: 6; display: flex; gap: 10px; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); background: linear-gradient(transparent, var(--bg) 38%); }
++  .pick-empty { margin: 24px; padding: 22px; border-radius: 20px; background: var(--card); color: var(--muted); text-align: center; }
++  .pick-empty b { display: block; margin-bottom: 6px; color: var(--ink); font-size: 16px; }
++  .sec-list { padding-bottom: 20px; }
++  .repobtn { display: none; align-items: center; gap: 8px; }
++  .repobtn svg { width: 19px; height: 19px; }
++  .at-cats .repobtn { display: inline-flex; }
++  .tv .row.src:focus { outline: 3px solid var(--accent); outline-offset: -3px; border-radius: 14px; }
++
 +  .poster:active { transform: scale(.97); }
 +</style>
 +</head>
@@ -36874,6 +36901,42 @@ index 0000000..a9bd72c
 +    <div class="posters" id="posters"></div>
 +    <div class="empty" id="empty" hidden><b>Bir şey bulunamadı</b>Depolarında bu kategoriye uyan bölüm yok. Kategoriyi düzenleyip anahtar kelimeleri değiştirmeyi dene.</div>
 +    <button class="more" id="more" hidden>Daha fazla yükle</button>
++  </section>
++
++  <section class="screen" id="s-pick">
++    <div class="bar">
++      <button class="icon-btn" data-back aria-label="Geri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
++      <h1 id="pickTitle"></h1>
++    </div>
++    <p class="hint">Bu kategori hangi depolardan yüklensin? Seçimin bu kategori için hatırlanır.</p>
++    <div class="tools">
++      <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="pq" type="search" placeholder="Depo ara" autocomplete="off"></label>
++    </div>
++    <div class="card picklist" id="pickAll"></div>
++    <div class="section-title"><h2>Depolar</h2><small id="pickCount"></small></div>
++    <div class="card picklist" id="pickList"></div>
++    <div class="pick-go"><button class="btn main" id="pickGo">Yükle</button></div>
++  </section>
++
++  <section class="screen" id="s-repos">
++    <div class="bar">
++      <button class="icon-btn" data-back aria-label="Geri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
++      <h1>Depolar</h1>
++    </div>
++    <p class="hint">Bir depo seç; o deponun ana sayfa bölümleri sıralansın.</p>
++    <div class="tools">
++      <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="rq" type="search" placeholder="Depo ara" autocomplete="off"></label>
++    </div>
++    <div class="card picklist" id="repoList"></div>
++  </section>
++
++  <section class="screen" id="s-sections">
++    <div class="bar">
++      <button class="icon-btn" data-back aria-label="Geri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
++      <h1 id="secTitle"></h1>
++    </div>
++    <p class="hint" id="secHint"></p>
++    <div class="wide-list sec-list" id="secList"></div>
 +  </section>
 +
 +  <section class="screen" id="s-edit">
@@ -37153,6 +37216,7 @@ index 0000000..a9bd72c
 +  var current = 's-cats';
 +  function showScreen(id) {
 +    current = id;
++    document.body.classList.toggle('at-cats', id === 's-cats');
 +    document.querySelectorAll('.screen').forEach(function (s) { s.classList.toggle('on', s.id === id); });
 +    window.scrollTo(0, 0);
 +    if (id === 's-cats') renderCats();
@@ -37192,12 +37256,12 @@ index 0000000..a9bd72c
 +    var arranged = arrange(), top = arranged.top;
 +    top.forEach(function (c, i) {
 +      var b = cover(c, i); if (firstRender) b.classList.add('enter');
-+      b.onclick = function () { openList(c); }; pinned.appendChild(b); watch(b);
++      b.onclick = function () { openPick(c); }; pinned.appendChild(b); watch(b);
 +    });
 +    var rest = arranged.rest;
 +    rest.forEach(function (c, i) {
 +      var b = cover(c, Math.min(i + 4, 9), true); if (firstRender) b.classList.add('enter');
-+      b.onclick = function () { openList(c); }; others.appendChild(b); watch(b);
++      b.onclick = function () { openPick(c); }; others.appendChild(b); watch(b);
 +    });
 +    firstRender = false;
 +    requestAnimationFrame(function () { fitNames(); fxAfterRender(); });
@@ -37209,8 +37273,10 @@ index 0000000..a9bd72c
 +  var postersEl = document.getElementById('posters'), sourcesEl = document.getElementById('sources');
 +  var loadText = document.getElementById('loadText'), loadBar = document.getElementById('loadBar');
 +
-+  function openList(c) {
++  var listSources = null, listSection = null;
++  function openList(c, sources, section) {
 +    lastOpened = c.name;
++    listSources = sources && sources.length ? sources : null; listSection = section || null;
 +    listCat = c; page = 1; filter = null; found = 0; order = 0;
 +    qEl.value = ''; sortIndex = 0; sortBtn.textContent = SORTS[0]; sortBtn.classList.remove('on');
 +    document.getElementById('listTitle').textContent = c.name;
@@ -37230,7 +37296,10 @@ index 0000000..a9bd72c
 +    loadText.textContent = 'Depolar taranıyor…';
 +    loadBar.style.width = '4%';
 +    if (!fresh && page === 1) skeletons(true);
-+    var spec = JSON.stringify({ kind: listCat.kind, keys: listCat.keys || '' });
++    var specObj = { kind: listCat.kind, keys: listCat.keys || '' };
++    if (listSources) specObj.sources = listSources;
++    if (listSection) specObj.section = listSection;
++    var spec = JSON.stringify(specObj);
 +    if (native) { try { if (fresh && native.reload) native.reload(token, spec, page); else native.load(token, spec, page); } catch (e) {} }
 +    else demo(token);
 +  }
@@ -37854,6 +37923,150 @@ index 0000000..a9bd72c
 +    Array.prototype.forEach.call(postersEl.querySelectorAll('.sk'), function (s) { postersEl.appendChild(s); });
 +  }
 +
++  // ---------------------------------------------------------------- repos: choosing where a category loads from
++  var FLAG_OF = { en: 'GB', ja: 'JP', ko: 'KR', zh: 'CN', hi: 'IN', ar: 'SA', vi: 'VN', uk: 'UA', cs: 'CZ', el: 'GR', he: 'IL', fa: 'IR', sv: 'SE', da: 'DK',
++    ms: 'MY', bn: 'BD', ta: 'IN', te: 'IN', ml: 'IN', ur: 'PK', sq: 'AL', et: 'EE', sl: 'SI', ka: 'GE', kk: 'KZ', ga: 'IE', nb: 'NO', no: 'NO', ca: 'ES', tl: 'PH', fil: 'PH' };
++  function flagOf(lang) {
++    var l = String(lang || '').toLowerCase().split(/[-_]/)[0];
++    var cc = FLAG_OF[l] || (l.length === 2 ? l.toUpperCase() : '');
++    if (!/^[A-Z]{2}$/.test(cc)) return '🌐';
++    return String.fromCodePoint(0x1F1E6 + cc.charCodeAt(0) - 65, 0x1F1E6 + cc.charCodeAt(1) - 65);
++  }
++  var ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
++  var ICON_STACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>';
++  var ICON_NEXT = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
++
++  function demoSources(c) {
++    var d = [['Depo A', 'tr', false, ['Son Eklenen Filmler', 'Popüler Diziler', 'Animasyon', 'Aksiyon']], ['Depo B', 'tr', false, ['Yeni Eklenenler', 'Komedi', 'Bilim Kurgu']],
++      ['Nuvio Eklentileri', 'tr', true, ['Popular Movies', 'Top Rated Movies', 'Popular Series']], ['Global', 'en', false, ['Latest', 'Trending', 'Top Airing']]];
++    return d.map(function (x, i) { return { name: x[0], lang: x[1], nuvio: x[2], sections: x[3], match: c ? x[3].slice(0, (i + 1) % 3) : [] }; });
++  }
++  /** Every repo source the app has: name, lang, nuvio, sections, match (sections fitting the category). */
++  function getSources(c) {
++    var spec = JSON.stringify(c ? { kind: c.kind, keys: c.keys || '' } : { kind: 'all', keys: '' });
++    var list = null;
++    try { if (native && native.sources) list = JSON.parse(native.sources(spec)); } catch (e) { list = null; }
++    if (!Array.isArray(list)) list = native ? [] : demoSources(c);
++    list.forEach(function (s) { s.sections = s.sections || []; s.match = s.match || []; });
++    return list;
++  }
++  function srcRow(s, sub, mode) {
++    var r = el('div', 'row src');
++    r.tabIndex = 0; r.dataset.key = s.name;
++    r.appendChild(el('span', 'src-flag', flagOf(s.lang)));
++    var t = el('div', 't');
++    t.innerHTML = '<b>' + esc(s.name) + '<i class="tag' + (s.nuvio ? '' : ' cs') + '">' + (s.nuvio ? 'NUVIO' : 'CS3') + '</i></b><span>' + esc(sub) + '</span>';
++    r.appendChild(t);
++    r.appendChild(mode === 'check' ? el('span', 'check', ICON_CHECK) : el('span', 'go', ICON_NEXT));
++    return r;
++  }
++  function keepFocus(draw) {
++    var key = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.key : null;
++    draw();
++    if (key) { var again = document.querySelector('.screen.on [data-key="' + key.replace(/"/g, '\\"') + '"]'); if (again) again.focus({ preventScroll: true }); }
++  }
++  function emptyRepos(box) {
++    box.classList.remove('card');
++    box.innerHTML = '<div class="pick-empty"><b>Henüz depo yok</b>Ayarlar › Eklentiler bölümünden bir CloudStream veya Nuvio deposu ekle.</div>';
++  }
++
++  var pickSel = load('fork-cat-sources-v1', {}); if (typeof pickSel !== 'object' || !pickSel) pickSel = {};
++  var pickCat = null, pickList = [], pickChosen = null; // null = every repo
++  function openPick(c) {
++    pickCat = c;
++    pickList = getSources(c).sort(function (a, b) { return (b.match.length ? 1 : 0) - (a.match.length ? 1 : 0); });
++    var saved = pickSel[c.name];
++    pickChosen = Array.isArray(saved) ? saved.filter(function (n) { return pickList.some(function (s) { return s.name === n; }); }) : null;
++    if (pickChosen && !pickChosen.length) pickChosen = null;
++    document.getElementById('pickTitle').textContent = c.name;
++    document.getElementById('pq').value = '';
++    drawPick();
++    go('s-pick');
++  }
++  function drawPick() {
++    var allBox = document.getElementById('pickAll'), listBox = document.getElementById('pickList');
++    allBox.innerHTML = ''; listBox.innerHTML = ''; listBox.classList.add('card');
++    var goBtn = document.getElementById('pickGo');
++    if (!pickList.length) { allBox.hidden = true; emptyRepos(listBox); goBtn.disabled = true; document.getElementById('pickCount').textContent = ''; return; }
++    allBox.hidden = false; goBtn.disabled = false;
++    var fit = pickList.filter(function (s) { return s.match.length; }).length;
++    var all = el('div', 'row src' + (pickChosen ? '' : ' on')); all.tabIndex = 0; all.dataset.key = '__all';
++    all.setAttribute('role', 'checkbox'); all.setAttribute('aria-checked', String(!pickChosen));
++    all.appendChild(el('span', 'src-flag all', ICON_STACK));
++    var at = el('div', 't'); at.innerHTML = '<b>Hepsi</b><span>' + pickList.length + ' depo · ' + fit + ' tanesinde uygun bölüm var</span>';
++    all.appendChild(at); all.appendChild(el('span', 'check', ICON_CHECK));
++    all.onclick = function () { pickChosen = null; keepFocus(drawPick); };
++    allBox.appendChild(all);
++    var q = document.getElementById('pq').value.trim().toLocaleLowerCase('tr'), shown = 0;
++    pickList.forEach(function (s) {
++      if (q && s.name.toLocaleLowerCase('tr').indexOf(q) < 0) return;
++      shown++;
++      var sub = s.match.length ? s.match.slice(0, 3).join(' · ') : 'Bu kategoriye uyan bölüm yok';
++      var on = !!pickChosen && pickChosen.indexOf(s.name) >= 0;
++      var r = srcRow(s, sub, 'check');
++      if (on) r.classList.add('on');
++      if (!s.match.length) r.classList.add('dim');
++      r.setAttribute('role', 'checkbox'); r.setAttribute('aria-checked', String(on));
++      r.onclick = function () {
++        var cur = pickChosen ? pickChosen.slice() : [];
++        var i = cur.indexOf(s.name);
++        if (i >= 0) cur.splice(i, 1); else cur.push(s.name);
++        pickChosen = cur.length && cur.length < pickList.length ? cur : null;
++        keepFocus(drawPick);
++      };
++      listBox.appendChild(r);
++    });
++    document.getElementById('pickCount').textContent = shown + ' depo';
++    goBtn.textContent = pickChosen ? 'Yükle · ' + pickChosen.length + ' depo' : 'Yükle · Hepsi';
++  }
++  document.getElementById('pq').addEventListener('input', function () { drawPick(); });
++  document.getElementById('pickGo').onclick = function () {
++    if (!pickCat) return;
++    pickSel[pickCat.name] = pickChosen; store('fork-cat-sources-v1', pickSel);
++    openList(pickCat, pickChosen);
++  };
++
++  // ---------------------------------------------------------------- repos: one repo's own home sections
++  var repoList = [];
++  function openRepos() {
++    repoList = getSources(null);
++    document.getElementById('rq').value = '';
++    drawRepos();
++    go('s-repos');
++  }
++  function drawRepos() {
++    var box = document.getElementById('repoList');
++    box.innerHTML = ''; box.classList.add('card');
++    if (!repoList.length) { emptyRepos(box); return; }
++    var q = document.getElementById('rq').value.trim().toLocaleLowerCase('tr');
++    repoList.forEach(function (s) {
++      if (q && s.name.toLocaleLowerCase('tr').indexOf(q) < 0) return;
++      var sub = s.sections.length ? s.sections.length + ' bölüm · ' + s.sections.slice(0, 3).join(' · ') : 'Ana sayfa bölümü yok';
++      var r = srcRow(s, sub, 'go');
++      if (!s.sections.length) r.classList.add('dim');
++      r.onclick = function () { if (s.sections.length) openSections(s); else toast('Bu deponun ana sayfası yok'); };
++      box.appendChild(r);
++    });
++  }
++  document.getElementById('rq').addEventListener('input', function () { drawRepos(); });
++  function openSections(s) {
++    document.getElementById('secTitle').textContent = s.name;
++    document.getElementById('secHint').textContent = s.sections.length + ' ana sayfa bölümü · birine dokun, içerikleri açılsın.';
++    var box = document.getElementById('secList');
++    box.innerHTML = '';
++    s.sections.forEach(function (name, i) {
++      var h = hash(s.name + '|' + name);
++      var c = { name: name, kind: 'genre', keys: '', scene: SCENE_NAMES[h % SCENE_NAMES.length], grade: h % 9 };
++      var b = cover(c, Math.min(i, 9), true);
++      b.classList.add('enter');
++      var small = b.querySelector('.txt small'); if (small) small.textContent = s.name;
++      b.onclick = function () { openList({ name: name, kind: 'section', keys: '', scene: 'none' }, [s.name], name); };
++      box.appendChild(b); watch(b);
++    });
++    go('s-sections');
++    requestAnimationFrame(fitNames);
++  }
++
 +  // ---------------------------------------------------------------- the panel
 +  var fxBtn = el('button', 'fxbtn', 'Efektler (önizleme)'), panel = el('div', 'fxpanel');
 +  panel.innerHTML = '<div class="fxtop"><h3>Hafif efektler<small>11 efekt · her birinde 20 stil</small></h3><button id="fxTall" title="Büyüt">⤢</button><button id="fxX" title="Kapat">✕</button></div>';
@@ -37921,7 +38134,13 @@ index 0000000..a9bd72c
 +  sections.touch.classList.add('open');
 +  var all = el('div', 'fxall', '<button id="fxReset">Varsayılan</button><button id="fxRandom">Rastgele</button><button id="fxAllOff">Hepsi kapalı</button>');
 +  panel.appendChild(all);
-+  document.body.appendChild(panel); document.body.appendChild(fxBtn);
++  document.body.appendChild(panel);
++  fxBtn.className = 'add'; document.getElementById('s-edit').appendChild(fxBtn);
++  var repoBtn = el('button', 'fxbtn repobtn', ICON_STACK + '<span>Depolar</span>');
++  repoBtn.setAttribute('aria-label', 'Depo seç');
++  repoBtn.onclick = function () { panel.classList.remove('on'); openRepos(); };
++  document.body.appendChild(repoBtn);
++  document.body.classList.add('at-cats');
 +  fxBtn.onclick = function () { panel.classList.toggle('on'); };
 +  function rebuildPanel() { store(FX_KEY, fxSet); location.reload(); }
 +  document.getElementById('fxReset').onclick = function () { fxSet = {}; rebuildPanel(); };
@@ -39880,10 +40099,10 @@ index 3879ddc..edc142d 100644
          repoLock.withLock {
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt b/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt
 new file mode 100644
-index 0000000..c80a5c8
+index 0000000..f138484
 --- /dev/null
 +++ b/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt
-@@ -0,0 +1,322 @@
+@@ -0,0 +1,363 @@
 +package com.lagradost.cloudstream3.ui.categories
 +
 +import android.annotation.SuppressLint
@@ -40036,15 +40255,27 @@ index 0000000..c80a5c8
 +
 +    // ------------------------------------------------------------------ filling a category
 +
-+    private data class Spec(val kind: String, val keys: List<String>)
++    private data class Spec(
++        val kind: String,
++        val keys: List<String>,
++        /** Only these providers; null means every provider. */
++        val sources: Set<String>? = null,
++        /** kind "section": the name of one main page section. */
++        val section: String? = null,
++    )
 +
 +    private fun norm(s: String) = s.lowercase(Locale.forLanguageTag("tr"))
 +
 +    private fun parseSpec(spec: String): Spec = try {
 +        val o = JSONObject(spec)
++        val sources = o.optJSONArray("sources")?.let { arr ->
++            (0 until arr.length()).map { arr.optString(it) }.filter { it.isNotBlank() }.toSet()
++        }?.takeIf { it.isNotEmpty() }
 +        Spec(
 +            o.optString("kind", "genre"),
-+            o.optString("keys", "").split(',').map { norm(it.trim()) }.filter { it.isNotEmpty() }
++            o.optString("keys", "").split(',').map { norm(it.trim()) }.filter { it.isNotEmpty() },
++            sources,
++            o.optString("section", "").takeIf { it.isNotBlank() },
 +        )
 +    } catch (e: Exception) {
 +        Spec("genre", emptyList())
@@ -40066,6 +40297,8 @@ index 0000000..c80a5c8
 +    /** Sections of [api] that fit the category; second value tells whether items must be filtered by type. */
 +    private fun sectionsFor(api: MainAPI, spec: Spec): Pair<List<MainPageData>, Boolean> {
 +        val sections = api.mainPage.filter { it.data.isNotBlank() || it.name.isNotBlank() }
++        if (spec.kind == "section") return sections.filter { it.name == spec.section }.take(1) to false
++        if (spec.kind == "all") return emptyList<MainPageData>() to false
 +        val words = spec.keys + (kindWords[spec.kind] ?: emptyList())
 +        val matched = sections.filter { section ->
 +            val n = norm(section.name)
@@ -40085,8 +40318,7 @@ index 0000000..c80a5c8
 +    private fun startLoad(token: Int, specJson: String, page: Int) {
 +        loadJob?.cancel()
 +        val spec = parseSpec(specJson)
-+        val providers = APIHolder.apis.filter { it.hasMainPage && it.name != "NONE" }
-+            .distinctBy { it.name }
++        val providers = homeProviders().filter { spec.sources == null || it.name in spec.sources }
 +        js("window.onCatStart && onCatStart($token, ${providers.size})")
 +        if (providers.isEmpty()) return
 +
@@ -40111,6 +40343,31 @@ index 0000000..c80a5c8
 +            }.awaitAll()
 +            js("window.onCatDone && onCatDone($token, false)")
 +        }
++    }
++
++    private fun homeProviders(): List<MainAPI> =
++        APIHolder.apis.filter { it.hasMainPage && it.name != "NONE" }.distinctBy { it.name }
++
++    /** Every provider for the repo pickers, with the sections that fit the category in [specJson]. */
++    private fun sourcesJson(specJson: String): String {
++        val spec = parseSpec(specJson)
++        val out = JSONArray()
++        for (api in homeProviders()) {
++            try {
++                val all = api.mainPage.map { it.name }.filter { it.isNotBlank() }
++                val match = sectionsFor(api, spec).first.map { it.name }.filter { it.isNotBlank() }
++                out.put(JSONObject().apply {
++                    put("name", api.name)
++                    put("lang", api.lang)
++                    put("nuvio", api is com.lagradost.cloudstream3.nuvio.NuvioProvider)
++                    put("sections", JSONArray(all))
++                    put("match", JSONArray(match))
++                })
++            } catch (e: Throwable) {
++                logError(e)
++            }
++        }
++        return out.toString()
 +    }
 +
 +    private suspend fun loadFrom(api: MainAPI, spec: Spec, page: Int): List<JSONObject> {
@@ -40159,6 +40416,9 @@ index 0000000..c80a5c8
 +
 +        @JavascriptInterface
 +        fun reload(token: Int, spec: String, page: Int) = startLoad(token, spec, page)
++
++        @JavascriptInterface
++        fun sources(spec: String): String = sourcesJson(spec)
 +
 +        @JavascriptInterface
 +        fun cancel() {
