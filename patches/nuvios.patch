@@ -36194,10 +36194,10 @@ HcmV?d00001
 
 diff --git a/app/src/main/assets/home/index.html b/app/src/main/assets/home/index.html
 new file mode 100644
-index 0000000..73a0ca7
+index 0000000..561052b
 --- /dev/null
 +++ b/app/src/main/assets/home/index.html
-@@ -0,0 +1,1990 @@
+@@ -0,0 +1,1992 @@
 +<!DOCTYPE html>
 +<html lang="tr">
 +<head>
@@ -36886,6 +36886,7 @@ index 0000000..73a0ca7
 +  .tag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 800; font-style: normal; letter-spacing: .04em; vertical-align: 2px;
 +    background: rgba(196,181,253,.16); color: #cfc2ff; }
 +  .tag.cs { background: rgba(242,165,142,.16); color: var(--accent); }
++  .tag.st { background: rgba(125,211,252,.16); color: #9ddcff; }
 +  .check { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,.26); display: grid; place-items: center; transition: background .15s, border-color .15s; }
 +  .check svg { width: 15px; height: 15px; stroke: var(--accent-ink); opacity: 0; transition: opacity .15s; }
 +  .row.src.on .check { background: var(--accent); border-color: transparent; }
@@ -37988,7 +37989,8 @@ index 0000000..73a0ca7
 +    r.tabIndex = 0; r.dataset.key = s.name;
 +    r.appendChild(el('span', 'src-flag', flagOf(s.lang)));
 +    var t = el('div', 't');
-+    t.innerHTML = '<b>' + esc(s.name) + '<i class="tag' + (s.nuvio ? '' : ' cs') + '">' + (s.nuvio ? 'NUVIO' : 'CS3') + '</i></b><span>' + esc(sub) + '</span>';
++    var tagCls = s.stremio ? ' st' : (s.nuvio ? '' : ' cs'), tagTxt = s.stremio ? 'STREMIO' : (s.nuvio ? 'NUVIO' : 'CS3');
++    t.innerHTML = '<b>' + esc(s.name) + '<i class="tag' + tagCls + '">' + tagTxt + '</i></b><span>' + esc(sub) + '</span>';
 +    r.appendChild(t);
 +    r.appendChild(mode === 'check' ? el('span', 'check', ICON_CHECK) : el('span', 'go', ICON_NEXT));
 +    return r;
@@ -38189,10 +38191,10 @@ index 0000000..73a0ca7
 +</body>
 +</html>
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/MainActivity.kt b/app/src/main/java/com/lagradost/cloudstream3/MainActivity.kt
-index 00e1815..13e5907 100644
+index 00e1815..d1cde34 100644
 --- a/app/src/main/java/com/lagradost/cloudstream3/MainActivity.kt
 +++ b/app/src/main/java/com/lagradost/cloudstream3/MainActivity.kt
-@@ -814,6 +814,17 @@ class MainActivity : AppCompatActivity(), ColorPickerDialogListener, BiometricCa
+@@ -814,6 +814,30 @@ class MainActivity : AppCompatActivity(), ColorPickerDialogListener, BiometricCa
          ioSafe {
              pluginsLock.withLock {
                  allProviders.withLock {
@@ -38204,6 +38206,19 @@ index 00e1815..13e5907 100644
 +                            allProviders.add(com.lagradost.cloudstream3.nuvio.NuvioProvider())
 +                        }
 +                        ioSafe { com.lagradost.cloudstream3.nuvio.NuvioPluginManager.refreshOncePerSession() }
++                        // Stremio addons: catalogs become providers, stream-only addons feed Nuvio Eklentileri
++                        val stremioManifests = com.lagradost.cloudstream3.nuvio.StremioAddonManager.manifests()
++                        if (stremioManifests.any { it.supports("stream", null, "tt0000001") } &&
++                            allProviders.none { it is com.lagradost.cloudstream3.nuvio.NuvioProvider }
++                        ) {
++                            allProviders.add(com.lagradost.cloudstream3.nuvio.NuvioProvider())
++                        }
++                        for (p in com.lagradost.cloudstream3.nuvio.StremioAddonManager.providers()) {
++                            if (allProviders.none { it is com.lagradost.cloudstream3.nuvio.StremioProvider && it.name == p.name }) {
++                                allProviders.add(p)
++                            }
++                        }
++                        ioSafe { com.lagradost.cloudstream3.nuvio.StremioAddonManager.refreshOncePerSession() }
 +                    } catch (e: Exception) {
 +                        logError(e)
 +                    }
@@ -38547,10 +38562,10 @@ index 0000000..303d98d
 +}
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/nuvio/NuvioProvider.kt b/app/src/main/java/com/lagradost/cloudstream3/nuvio/NuvioProvider.kt
 new file mode 100644
-index 0000000..0a2860e
+index 0000000..71f3937
 --- /dev/null
 +++ b/app/src/main/java/com/lagradost/cloudstream3/nuvio/NuvioProvider.kt
-@@ -0,0 +1,81 @@
+@@ -0,0 +1,91 @@
 +package com.lagradost.cloudstream3.nuvio
 +
 +import com.lagradost.cloudstream3.SubtitleFile
@@ -38584,9 +38599,19 @@ index 0000000..0a2860e
 +        callback: (ExtractorLink) -> Unit
 +    ): Boolean {
 +        val link = parseJson<TmdbLink>(data)
-+        val tmdbId = link.tmdbID ?: return false
 +        val isTv = link.season != null && link.episode != null
 +        val mediaType = if (isTv) "tv" else "movie"
++
++        // Stremio addons that answer IMDb ids
++        var stremioCount = 0
++        link.imdbID?.takeIf { it.startsWith("tt") }?.let { imdb ->
++            val (type, id) = if (isTv) "series" to "$imdb:${link.season}:${link.episode}" else "movie" to imdb
++            stremioCount = StremioAddonManager.emit(
++                StremioAddonManager.streams(type, id), subtitleCallback, callback
++            )
++        }
++
++        val tmdbId = link.tmdbID ?: return stremioCount > 0
 +
 +        val found = Collections.synchronizedList(mutableListOf<Pair<NuvioScraper, LocalScraperResult>>())
 +        NuvioPluginManager.getStreams(
@@ -38629,7 +38654,7 @@ index 0000000..0a2860e
 +                })
 +            }
 +        }
-+        return results.isNotEmpty()
++        return results.isNotEmpty() || stremioCount > 0
 +    }
 +}
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/nuvio/NuvioRuntime.kt b/app/src/main/java/com/lagradost/cloudstream3/nuvio/NuvioRuntime.kt
@@ -40116,14 +40141,440 @@ index 0000000..fb25aff
 +        }
 +    }
 +}
+diff --git a/app/src/main/java/com/lagradost/cloudstream3/nuvio/StremioAddons.kt b/app/src/main/java/com/lagradost/cloudstream3/nuvio/StremioAddons.kt
+new file mode 100644
+index 0000000..b6e79d0
+--- /dev/null
++++ b/app/src/main/java/com/lagradost/cloudstream3/nuvio/StremioAddons.kt
+@@ -0,0 +1,417 @@
++package com.lagradost.cloudstream3.nuvio
++
++import android.util.Log
++import com.fasterxml.jackson.annotation.JsonProperty
++import com.lagradost.cloudstream3.APIHolder
++import com.lagradost.cloudstream3.CloudStreamApp.Companion.getKey
++import com.lagradost.cloudstream3.CloudStreamApp.Companion.setKey
++import com.lagradost.cloudstream3.HomePageResponse
++import com.lagradost.cloudstream3.LoadResponse
++import com.lagradost.cloudstream3.MainAPI
++import com.lagradost.cloudstream3.MainPageData
++import com.lagradost.cloudstream3.MainPageRequest
++import com.lagradost.cloudstream3.SearchResponse
++import com.lagradost.cloudstream3.SubtitleFile
++import com.lagradost.cloudstream3.TvType
++import com.lagradost.cloudstream3.app
++import com.lagradost.cloudstream3.newEpisode
++import com.lagradost.cloudstream3.newHomePageResponse
++import com.lagradost.cloudstream3.newMovieLoadResponse
++import com.lagradost.cloudstream3.newMovieSearchResponse
++import com.lagradost.cloudstream3.newSubtitleFile
++import com.lagradost.cloudstream3.newTvSeriesLoadResponse
++import com.lagradost.cloudstream3.utils.ExtractorLink
++import com.lagradost.cloudstream3.utils.ExtractorLinkType
++import com.lagradost.cloudstream3.utils.INFER_TYPE
++import com.lagradost.cloudstream3.utils.getQualityFromName
++import com.lagradost.cloudstream3.utils.newExtractorLink
++import kotlinx.coroutines.Dispatchers
++import kotlinx.coroutines.async
++import kotlinx.coroutines.awaitAll
++import kotlinx.coroutines.coroutineScope
++import kotlinx.coroutines.withContext
++import kotlinx.coroutines.withTimeoutOrNull
++import org.json.JSONArray
++import org.json.JSONObject
++import java.net.URLEncoder
++import java.util.concurrent.ConcurrentHashMap
++
++/** A Stremio addon (manifest.json with resources such as catalog, meta, stream). */
++data class StremioAddon(
++    @JsonProperty("url") val url: String,
++    @JsonProperty("name") val name: String,
++    @JsonProperty("manifest") val manifest: String,
++)
++
++/** Parsed view of a Stremio manifest. */
++class StremioManifest(val baseUrl: String, json: JSONObject) {
++    class Catalog(val type: String, val id: String, val name: String, val extraSupported: Set<String>, val extraRequired: Set<String>)
++
++    val id: String = json.optString("id")
++    val name: String = json.optString("name").ifBlank { id.ifBlank { "Stremio eklentisi" } }
++    val description: String = json.optString("description")
++    val types: List<String> = json.optJSONArray("types").strings()
++    private val idPrefixes: List<String>? = json.optJSONArray("idPrefixes")?.strings()
++
++    /** resource name -> (types, idPrefixes) ; null lists mean "same as the manifest". */
++    private val resources = HashMap<String, Pair<List<String>?, List<String>?>>()
++
++    val catalogs: List<Catalog>
++
++    init {
++        json.optJSONArray("resources")?.let { arr ->
++            for (i in 0 until arr.length()) {
++                when (val r = arr.opt(i)) {
++                    is String -> resources[r] = null to null
++                    is JSONObject -> resources[r.optString("name")] =
++                        r.optJSONArray("types")?.strings() to r.optJSONArray("idPrefixes")?.strings()
++                }
++            }
++        }
++        catalogs = json.optJSONArray("catalogs")?.let { arr ->
++            (0 until arr.length()).mapNotNull { arr.optJSONObject(it) }.map { c ->
++                val supported = HashSet<String>()
++                val required = HashSet<String>()
++                c.optJSONArray("extra")?.let { ex ->
++                    for (i in 0 until ex.length()) {
++                        val e = ex.optJSONObject(i) ?: continue
++                        val n = e.optString("name")
++                        supported += n
++                        if (e.optBoolean("isRequired")) required += n
++                    }
++                }
++                c.optJSONArray("extraSupported")?.strings()?.let { supported += it }
++                c.optJSONArray("extraRequired")?.strings()?.let { required += it; supported += it }
++                Catalog(
++                    c.optString("type"), c.optString("id"),
++                    c.optString("name").ifBlank { "${c.optString("type")} ${c.optString("id")}" },
++                    supported, required
++                )
++            }
++        } ?: emptyList()
++    }
++
++    fun supports(resource: String, type: String?, id: String?): Boolean {
++        val (rTypes, rPrefixes) = resources[resource] ?: return false
++        val typesOk = type == null || (rTypes ?: types).let { it.isEmpty() || type in it }
++        val prefixes = rPrefixes ?: idPrefixes
++        val idOk = id == null || prefixes.isNullOrEmpty() || prefixes.any { id.startsWith(it) }
++        return typesOk && idOk
++    }
++
++    /** Catalogs a home page can show (no required extra such as search or genre). */
++    val homeCatalogs get() = catalogs.filter { it.extraRequired.isEmpty() }
++    val searchCatalogs get() = catalogs.filter { "search" in it.extraSupported }
++
++    companion object {
++        fun JSONArray?.strings(): List<String> =
++            if (this == null) emptyList() else (0 until length()).map { optString(it) }.filter { it.isNotBlank() }
++
++        /** Returns null when [body] is not a Stremio manifest. */
++        fun parse(manifestUrl: String, body: String): StremioManifest? = try {
++            val json = JSONObject(body.trim())
++            if (!json.has("resources") || !json.has("id")) null
++            else StremioManifest(manifestUrl.substringBeforeLast("/manifest.json").trimEnd('/'), json)
++        } catch (e: Exception) {
++            null
++        }
++    }
++}
++
++object StremioAddonManager {
++    private const val TAG = "StremioAddons"
++    private const val KEY = "STREMIO_ADDONS"
++
++    private val parsed = ConcurrentHashMap<String, StremioManifest>()
++
++    fun getAddons(): List<StremioAddon> = getKey<Array<StremioAddon>>(KEY)?.toList() ?: emptyList()
++
++    fun isAddon(url: String) = getAddons().any { it.url == url }
++
++    fun manifests(): List<StremioManifest> = getAddons().mapNotNull { addon ->
++        parsed[addon.url] ?: StremioManifest.parse(addon.url, addon.manifest)?.also { parsed[addon.url] = it }
++    }
++
++    private fun normalize(input: String): String {
++        var url = input.trim()
++        if (url.startsWith("stremio://", ignoreCase = true)) url = "https://" + url.substring("stremio://".length)
++        url = url.trimEnd('/')
++        if (!url.endsWith("manifest.json", ignoreCase = true)) url = "$url/manifest.json"
++        return url
++    }
++
++    /** Adds [input] if it is a Stremio addon; returns null otherwise. */
++    suspend fun tryAdd(input: String, customName: String?): StremioAddon? = withContext(Dispatchers.IO) {
++        val trimmed = input.trim()
++        if (!trimmed.startsWith("http", true) && !trimmed.startsWith("stremio://", true)) return@withContext null
++        val url = normalize(trimmed)
++        val body = try {
++            app.get(url).takeIf { it.isSuccessful }?.text
++        } catch (e: Exception) {
++            null
++        } ?: return@withContext null
++        val manifest = StremioManifest.parse(url, body) ?: return@withContext null
++        val addon = StremioAddon(url, customName?.takeIf { it.isNotBlank() } ?: manifest.name, body)
++        setKey(KEY, (getAddons().filter { it.url != url } + addon).toTypedArray())
++        parsed[url] = manifest
++        registerProviders()
++        addon
++    }
++
++    fun remove(url: String) {
++        setKey(KEY, getAddons().filter { it.url != url }.toTypedArray())
++        parsed.remove(url)
++    }
++
++    /** Every addon with a home catalog becomes a provider of its own. */
++    fun providers(): List<StremioProvider> = getAddons().mapNotNull { addon ->
++        val m = manifests().firstOrNull { it.baseUrl == addon.url.substringBeforeLast("/manifest.json").trimEnd('/') }
++            ?: return@mapNotNull null
++        if (m.homeCatalogs.isEmpty() && m.searchCatalogs.isEmpty()) null else StremioProvider(addon.name, m)
++    }
++
++    fun registerProviders() {
++        APIHolder.allProviders.withLock {
++            // Addons that answer IMDb ids also feed the "Nuvio Eklentileri" provider (TMDB catalog)
++            if (manifests().any { it.supports("stream", null, "tt0000001") } &&
++                APIHolder.allProviders.none { it is NuvioProvider }
++            ) {
++                val nuvio = NuvioProvider()
++                APIHolder.allProviders.add(nuvio)
++                APIHolder.addPluginMapping(nuvio)
++            }
++            for (provider in providers()) {
++                if (APIHolder.allProviders.any { it is StremioProvider && it.name == provider.name }) continue
++                APIHolder.allProviders.add(provider)
++                APIHolder.addPluginMapping(provider)
++            }
++        }
++    }
++
++    /** Refreshes stored manifests once per app start. */
++    @Volatile
++    private var refreshed = false
++    suspend fun refreshOncePerSession() = withContext(Dispatchers.IO) {
++        if (refreshed) return@withContext
++        refreshed = true
++        val updated = getAddons().map { addon ->
++            try {
++                val body = app.get(addon.url).takeIf { it.isSuccessful }?.text
++                if (body != null && StremioManifest.parse(addon.url, body) != null) {
++                    parsed.remove(addon.url)
++                    addon.copy(manifest = body)
++                } else addon
++            } catch (e: Exception) {
++                addon
++            }
++        }
++        setKey(KEY, updated.toTypedArray())
++    }
++
++    private fun enc(s: String) = URLEncoder.encode(s, "UTF-8").replace("+", "%20")
++
++    /** Streams of every addon that can answer for ([type], [id]). */
++    suspend fun streams(type: String, id: String, only: StremioManifest? = null): List<Pair<StremioManifest, JSONObject>> =
++        coroutineScope {
++            val addons = (only?.let { listOf(it) } ?: manifests()).filter { it.supports("stream", type, id) }
++            addons.map { m ->
++                async(Dispatchers.IO) {
++                    try {
++                        withTimeoutOrNull(30_000L) {
++                            val res = app.get("${m.baseUrl}/stream/${enc(type)}/${enc(id)}.json")
++                            if (!res.isSuccessful) return@withTimeoutOrNull emptyList()
++                            val arr = JSONObject(res.text).optJSONArray("streams") ?: return@withTimeoutOrNull emptyList()
++                            (0 until arr.length()).mapNotNull { arr.optJSONObject(it) }.map { m to it }
++                        } ?: emptyList()
++                    } catch (e: Exception) {
++                        Log.e(TAG, "${m.name} streams failed: ${e.message}")
++                        emptyList()
++                    }
++                }
++            }.awaitAll().flatten()
++        }
++
++    /** Turns Stremio stream objects into CloudStream links. Returns how many links were sent. */
++    suspend fun emit(
++        found: List<Pair<StremioManifest, JSONObject>>,
++        subtitleCallback: (SubtitleFile) -> Unit,
++        callback: (ExtractorLink) -> Unit
++    ): Int {
++        var count = 0
++        val seenSubs = HashSet<String>()
++        for ((m, s) in found) {
++            val label = listOf(s.optString("name"), s.optString("title"), s.optString("description"))
++                .flatMap { it.split('\n') }.map { it.trim() }.filter { it.isNotEmpty() }.distinct()
++                .joinToString(" · ")
++            val hints = s.optJSONObject("behaviorHints")
++            val headers = HashMap<String, String>()
++            hints?.optJSONObject("proxyHeaders")?.optJSONObject("request")?.let { h ->
++                h.keys().forEach { k -> headers[k] = h.optString(k) }
++            }
++            val url = s.optString("url").takeIf { it.isNotBlank() }
++            val infoHash = s.optString("infoHash").takeIf { it.isNotBlank() }
++            val link: String
++            val type: ExtractorLinkType?
++            when {
++                url != null -> {
++                    link = url
++                    type = if (url.substringBefore('?').endsWith(".m3u8", true)) ExtractorLinkType.M3U8 else INFER_TYPE
++                }
++                infoHash != null -> {
++                    link = "magnet:?xt=urn:btih:$infoHash"
++                    type = ExtractorLinkType.MAGNET
++                }
++                else -> continue
++            }
++            callback(
++                newExtractorLink(
++                    source = m.name,
++                    name = if (label.isBlank()) m.name else "${m.name} – $label",
++                    url = link,
++                    type = type
++                ) {
++                    quality = getQualityFromName(label)
++                    this.headers = headers
++                    referer = headers.entries.firstOrNull { it.key.equals("Referer", true) }?.value ?: ""
++                }
++            )
++            count++
++            s.optJSONArray("subtitles")?.let { subs ->
++                for (i in 0 until subs.length()) {
++                    val sub = subs.optJSONObject(i) ?: continue
++                    val subUrl = sub.optString("url").takeIf { it.isNotBlank() } ?: continue
++                    if (!seenSubs.add(subUrl)) continue
++                    subtitleCallback(newSubtitleFile(sub.optString("lang").ifBlank { "Bilinmiyor" }, subUrl))
++                }
++            }
++        }
++        return count
++    }
++}
++
++/** One Stremio addon with catalogs, as a CloudStream provider. */
++class StremioProvider(addonName: String, private val manifest: StremioManifest) : MainAPI() {
++    override var name = addonName
++    override var mainUrl = manifest.baseUrl
++    override var lang = if (Regex("(?i)türk|turk|dizi|altyaz|dublaj").containsMatchIn(manifest.name + " " + manifest.description)) "tr" else "en"
++    override val hasMainPage = manifest.homeCatalogs.isNotEmpty()
++    override val hasQuickSearch = false
++    override val supportedTypes = manifest.types.map { typeOf(it) }.toSet().ifEmpty { setOf(TvType.Movie, TvType.TvSeries) }
++    override val mainPage = manifest.homeCatalogs.map { MainPageData(it.name, "${it.type}|${it.id}") }
++
++    private val pageSizes = ConcurrentHashMap<String, Int>()
++
++    private fun enc(s: String) = URLEncoder.encode(s, "UTF-8").replace("+", "%20")
++
++    private fun typeOf(t: String): TvType = when (t.lowercase()) {
++        "movie" -> TvType.Movie
++        "series" -> TvType.TvSeries
++        "anime" -> TvType.Anime
++        "tv", "channel" -> TvType.Live
++        else -> TvType.Others
++    }
++
++    private fun itemOf(meta: JSONObject, fallbackType: String): SearchResponse? {
++        val id = meta.optString("id").takeIf { it.isNotBlank() } ?: return null
++        val type = meta.optString("type").ifBlank { fallbackType }
++        val name = meta.optString("name").ifBlank { return null }
++        return newMovieSearchResponse(name, "stremio:$type:$id", typeOf(type), fix = false) {
++            posterUrl = meta.optString("poster").takeIf { it.isNotBlank() }
++            year = meta.optString("releaseInfo").take(4).toIntOrNull()
++        }
++    }
++
++    private suspend fun catalog(type: String, id: String, extra: String?): List<SearchResponse> {
++        val path = if (extra == null) "${enc(type)}/${enc(id)}.json" else "${enc(type)}/${enc(id)}/$extra.json"
++        val res = app.get("$mainUrl/catalog/$path")
++        if (!res.isSuccessful) return emptyList()
++        val metas = JSONObject(res.text).optJSONArray("metas") ?: return emptyList()
++        return (0 until metas.length()).mapNotNull { metas.optJSONObject(it) }.mapNotNull { itemOf(it, type) }
++    }
++
++    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
++        val (type, id) = request.data.split('|', limit = 2).let { it[0] to it.getOrElse(1) { "" } }
++        val cat = manifest.homeCatalogs.firstOrNull { it.type == type && it.id == id }
++        val key = request.data
++        val items = if (page <= 1) {
++            catalog(type, id, null).also { pageSizes[key] = it.size }
++        } else {
++            if (cat?.extraSupported?.contains("skip") != true) return newHomePageResponse(request, emptyList(), false)
++            val size = pageSizes[key]?.takeIf { it > 0 } ?: 100
++            catalog(type, id, "skip=${(page - 1) * size}")
++        }
++        val canMore = cat?.extraSupported?.contains("skip") == true && items.isNotEmpty()
++        return newHomePageResponse(request, items, canMore)
++    }
++
++    override suspend fun search(query: String): List<SearchResponse> = coroutineScope {
++        manifest.searchCatalogs.take(4).map { c ->
++            async {
++                try {
++                    catalog(c.type, c.id, "search=${enc(query)}")
++                } catch (e: Exception) {
++                    emptyList()
++                }
++            }
++        }.awaitAll().flatten().distinctBy { it.url }
++    }
++
++    private suspend fun meta(type: String, id: String): JSONObject? {
++        val base = when {
++            manifest.supports("meta", type, id) -> mainUrl
++            id.startsWith("tt") -> "https://v3-cinemeta.strem.io"
++            else -> return null
++        }
++        val res = app.get("$base/meta/${enc(type)}/${enc(id)}.json")
++        if (!res.isSuccessful) return null
++        return JSONObject(res.text).optJSONObject("meta")
++    }
++
++    override suspend fun load(url: String): LoadResponse? {
++        val parts = url.removePrefix("stremio:").split(':', limit = 2)
++        val type = parts[0]
++        val id = parts.getOrElse(1) { return null }
++        val meta = meta(type, id) ?: JSONObject().put("name", id)
++        val title = meta.optString("name").ifBlank { id }
++        val poster = meta.optString("poster").takeIf { it.isNotBlank() }
++        val background = meta.optString("background").takeIf { it.isNotBlank() }
++        val plot = meta.optString("description").takeIf { it.isNotBlank() }
++        val year = meta.optString("releaseInfo").take(4).toIntOrNull() ?: meta.optInt("year").takeIf { it > 0 }
++        val tags = StremioManifest.run { meta.optJSONArray("genres").strings() }.ifEmpty { null }
++        val videos = meta.optJSONArray("videos")
++
++        if (videos == null || videos.length() == 0 || type == "movie") {
++            return newMovieLoadResponse(title, url, typeOf(type), JSONObject().put("type", type).put("id", id).toString()) {
++                posterUrl = poster; backgroundPosterUrl = background; this.plot = plot; this.year = year; this.tags = tags
++            }
++        }
++        val episodes = (0 until videos.length()).mapNotNull { videos.optJSONObject(it) }.mapNotNull { v ->
++            val vid = v.optString("id").takeIf { it.isNotBlank() } ?: return@mapNotNull null
++            newEpisode(url = JSONObject().put("type", type).put("id", vid).toString(), initializer = {
++                name = v.optString("title").ifBlank { v.optString("name") }.takeIf { it.isNotBlank() }
++                season = v.optInt("season", -1).takeIf { it >= 0 }
++                episode = v.optInt("episode", v.optInt("number", -1)).takeIf { it >= 0 }
++                posterUrl = v.optString("thumbnail").takeIf { it.isNotBlank() }
++                description = v.optString("overview").takeIf { it.isNotBlank() }
++            }, fix = false)
++        }
++        return newTvSeriesLoadResponse(title, url, typeOf(type), episodes) {
++            posterUrl = poster; backgroundPosterUrl = background; this.plot = plot; this.year = year; this.tags = tags
++        }
++    }
++
++    override suspend fun loadLinks(
++        data: String,
++        isCasting: Boolean,
++        subtitleCallback: (SubtitleFile) -> Unit,
++        callback: (ExtractorLink) -> Unit
++    ): Boolean {
++        val o = JSONObject(data)
++        val type = o.optString("type")
++        val id = o.optString("id")
++        // This addon first, then every other addon that understands the same id (for example IMDb ids)
++        val own = StremioAddonManager.streams(type, id, manifest)
++        val others = StremioAddonManager.streams(type, id).filter { it.first.baseUrl != manifest.baseUrl }
++        return StremioAddonManager.emit(own + others, subtitleCallback, callback) > 0
++    }
++}
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/plugins/RepositoryManager.kt b/app/src/main/java/com/lagradost/cloudstream3/plugins/RepositoryManager.kt
-index 3879ddc..edc142d 100644
+index 3879ddc..944fef8 100644
 --- a/app/src/main/java/com/lagradost/cloudstream3/plugins/RepositoryManager.kt
 +++ b/app/src/main/java/com/lagradost/cloudstream3/plugins/RepositoryManager.kt
-@@ -257,6 +257,9 @@ object RepositoryManager {
+@@ -257,6 +257,12 @@ object RepositoryManager {
       * Also deletes downloaded repository plugins
       */
      suspend fun removeRepository(context: Context, repository: RepositoryData) {
++        if (com.lagradost.cloudstream3.nuvio.StremioAddonManager.isAddon(repository.url)) {
++            com.lagradost.cloudstream3.nuvio.StremioAddonManager.remove(repository.url)
++        }
 +        if (com.lagradost.cloudstream3.nuvio.NuvioPluginManager.isNuvioRepository(repository.url)) {
 +            com.lagradost.cloudstream3.nuvio.NuvioPluginManager.removeRepository(repository.url)
 +        }
@@ -40132,10 +40583,10 @@ index 3879ddc..edc142d 100644
          repoLock.withLock {
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt b/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt
 new file mode 100644
-index 0000000..ec627f8
+index 0000000..c587be4
 --- /dev/null
 +++ b/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt
-@@ -0,0 +1,383 @@
+@@ -0,0 +1,384 @@
 +package com.lagradost.cloudstream3.ui.categories
 +
 +import android.annotation.SuppressLint
@@ -40395,6 +40846,7 @@ index 0000000..ec627f8
 +                    put("name", api.name)
 +                    put("lang", api.lang)
 +                    put("nuvio", api is com.lagradost.cloudstream3.nuvio.NuvioProvider)
++                    put("stremio", api is com.lagradost.cloudstream3.nuvio.StremioProvider)
 +                    put("sections", JSONArray(all))
 +                    put("match", JSONArray(match))
 +                })
@@ -40557,10 +41009,10 @@ index 6aa94fa..90199fc 100644
                  Preference.PreferenceItem.ListPreference(
                      preference = settings.general.locale,
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/ui/settings/extensions/ExtensionsFragment.kt b/app/src/main/java/com/lagradost/cloudstream3/ui/settings/extensions/ExtensionsFragment.kt
-index 1072274..4c14bcd 100644
+index 1072274..593e50f 100644
 --- a/app/src/main/java/com/lagradost/cloudstream3/ui/settings/extensions/ExtensionsFragment.kt
 +++ b/app/src/main/java/com/lagradost/cloudstream3/ui/settings/extensions/ExtensionsFragment.kt
-@@ -287,6 +287,24 @@ class ExtensionsFragment : BaseFragment<FragmentExtensionsBinding>(
+@@ -287,6 +287,40 @@ class ExtensionsFragment : BaseFragment<FragmentExtensionsBinding>(
                  binding.applyBtt.showProgress()
                  ioSafe {
                      try {
@@ -40577,6 +41029,22 @@ index 1072274..4c14bcd 100644
 +                            dialog.dismissSafe(activity)
 +                            showToast(
 +                                "Nuvio deposu eklendi: $count eklenti. Ana sayfada \"Nuvio Eklentileri\" kaynağını seç.",
++                                Toast.LENGTH_LONG
++                            )
++                            return@ioSafe
++                        }
++
++                        // Stremio addons (manifest.json with catalog / meta / stream resources)
++                        val stremio = com.lagradost.cloudstream3.nuvio.StremioAddonManager.tryAdd(urlInput, name)
++                        if (stremio != null) {
++                            RepositoryManager.addRepository(
++                                RepositoryData(null, "${stremio.name} (Stremio)", stremio.url)
++                            )
++                            extensionViewModel.loadStats()
++                            extensionViewModel.loadRepositories()
++                            dialog.dismissSafe(activity)
++                            showToast(
++                                "Stremio eklentisi eklendi: ${stremio.name}. Kategorilerde ve Depolar listesinde görünür.",
 +                                Toast.LENGTH_LONG
 +                            )
 +                            return@ioSafe
