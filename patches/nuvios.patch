@@ -1,8 +1,8 @@
 diff --git a/app/build.gradle.kts b/app/build.gradle.kts
-index c714368..b5b5521 100644
+index c714368..4fec599 100644
 --- a/app/build.gradle.kts
 +++ b/app/build.gradle.kts
-@@ -103,7 +103,7 @@ android {
+@@ -103,10 +103,11 @@ android {
      compileSdk = libs.versions.compileSdk.get().toInt()
  
      defaultConfig {
@@ -10,8 +10,25 @@ index c714368..b5b5521 100644
 +        applicationId = "com.darknesslord19.nuvios"
          minSdk = libs.versions.minSdk.get().toInt()
          targetSdk = libs.versions.targetSdk.get().toInt()
-         versionCode = libs.versions.versionCode.get().toInt()
-@@ -280,6 +280,10 @@ dependencies {
+-        versionCode = libs.versions.versionCode.get().toInt()
++        // Every CI build gets a higher versionCode so it installs over the previous one
++        versionCode = libs.versions.versionCode.get().toInt() + (System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 0)
+         versionName = libs.versions.versionName.get()
+ 
+         manifestPlaceholders["target_sdk_version"] = libs.versions.targetSdk.get()
+@@ -119,6 +120,11 @@ android {
+             "BUILD_DATE",
+             "${System.currentTimeMillis()}"
+         )
++        buildConfigField(
++            "String",
++            "TMDB_API_KEY",
++            "\"" + (System.getenv("TMDB_API_KEY") ?: localProperties["tmdb.key"] ?: "") + "\""
++        )
+         buildConfigField(
+             "String",
+             "SIMKL_CLIENT_ID",
+@@ -280,6 +286,10 @@ dependencies {
  
      // Temp/deprecated; will be removed once extensions have time to migrate from using it
      implementation("com.google.code.gson:gson:2.11.0")
@@ -38601,7 +38618,7 @@ index 0000000..0a2860e
 +}
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/nuvio/NuvioRuntime.kt b/app/src/main/java/com/lagradost/cloudstream3/nuvio/NuvioRuntime.kt
 new file mode 100644
-index 0000000..a089d72
+index 0000000..fb25aff
 --- /dev/null
 +++ b/app/src/main/java/com/lagradost/cloudstream3/nuvio/NuvioRuntime.kt
 @@ -0,0 +1,1478 @@
@@ -39058,7 +39075,7 @@ index 0000000..a089d72
 +                val settingsJson = gson.toJson(scraperSettings)
 +                function("__get_scraper_id") { scraperId }
 +                function("__get_scraper_settings") { settingsJson }
-+                function("__get_tmdb_api_key") { NUVIO_TMDB_API_KEY }
++                function("__get_tmdb_api_key") { com.lagradost.cloudstream3.utils.TmdbPosters.apiKey() }
 +
 +                val polyfillBytecode = getCompiledPolyfillBytecode(this)
 +                evaluate<Any?>(polyfillBytecode)
@@ -40099,10 +40116,10 @@ index 3879ddc..edc142d 100644
          repoLock.withLock {
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt b/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt
 new file mode 100644
-index 0000000..f138484
+index 0000000..ec627f8
 --- /dev/null
 +++ b/app/src/main/java/com/lagradost/cloudstream3/ui/categories/CategoriesFragment.kt
-@@ -0,0 +1,363 @@
+@@ -0,0 +1,383 @@
 +package com.lagradost.cloudstream3.ui.categories
 +
 +import android.annotation.SuppressLint
@@ -40135,6 +40152,7 @@ index 0000000..f138484
 +import com.lagradost.cloudstream3.utils.AppContextUtils.loadSearchResult
 +import com.lagradost.cloudstream3.utils.UIHelper.fixSystemBarsPadding
 +import com.lagradost.cloudstream3.utils.UIHelper.navigate
++import com.lagradost.cloudstream3.utils.TmdbPosters
 +import kotlinx.coroutines.CoroutineScope
 +import kotlinx.coroutines.Dispatchers
 +import kotlinx.coroutines.Job
@@ -40142,6 +40160,7 @@ index 0000000..f138484
 +import kotlinx.coroutines.async
 +import kotlinx.coroutines.awaitAll
 +import kotlinx.coroutines.cancel
++import kotlinx.coroutines.coroutineScope
 +import kotlinx.coroutines.launch
 +import kotlinx.coroutines.sync.Semaphore
 +import kotlinx.coroutines.sync.withPermit
@@ -40375,6 +40394,7 @@ index 0000000..f138484
 +        if (sections.isEmpty()) return emptyList()
 +        val wanted = kindTypes[spec.kind]
 +        val out = LinkedHashMap<String, JSONObject>()
++        val noPoster = ArrayList<Pair<JSONObject, SearchResponse>>()
 +        for (section in sections) {
 +            val response = api.getMainPage(
 +                page,
@@ -40386,15 +40406,32 @@ index 0000000..f138484
 +                    val id = "${api.name}|${item.url}"
 +                    if (out.containsKey(id)) continue
 +                    items[id] = item
-+                    out[id] = JSONObject().apply {
++                    val json = JSONObject().apply {
 +                        put("id", id)
 +                        put("name", item.name)
-+                        item.posterUrl?.let { put("poster", it) }
++                        item.posterUrl?.takeIf { it.isNotBlank() }?.let { put("poster", it) }
 +                        item.quality?.let { put("quality", it.name) }
 +                        dubOf(item)?.let { put("dub", it) }
 +                    }
++                    out[id] = json
++                    if (item.posterUrl.isNullOrBlank()) noPoster += json to item
 +                }
 +            }
++        }
++        // Posters the provider did not give come from TMDB
++        if (noPoster.isNotEmpty()) coroutineScope {
++            val semaphore = Semaphore(6)
++            noPoster.map { (json, item) ->
++                async {
++                    semaphore.withPermit {
++                        val poster = withTimeoutOrNull(8_000L) { TmdbPosters.poster(item.name, item.type) }
++                        if (poster != null) {
++                            item.posterUrl = poster
++                            json.put("poster", poster)
++                        }
++                    }
++                }
++            }.awaitAll()
 +        }
 +        return out.values.toList()
 +    }
@@ -40466,6 +40503,43 @@ index 0000000..f138484
 +        private const val STORE_FOLDER = "categories_page"
 +    }
 +}
+diff --git a/app/src/main/java/com/lagradost/cloudstream3/ui/settings/SettingsGeneralScreen.kt b/app/src/main/java/com/lagradost/cloudstream3/ui/settings/SettingsGeneralScreen.kt
+index 6aa94fa..90199fc 100644
+--- a/app/src/main/java/com/lagradost/cloudstream3/ui/settings/SettingsGeneralScreen.kt
++++ b/app/src/main/java/com/lagradost/cloudstream3/ui/settings/SettingsGeneralScreen.kt
+@@ -52,6 +52,11 @@ object SettingsGeneralScreen : SearchableSettings {
+     @Composable
+     override fun getPreferences(): List<Preference> {
+         val settings = rememberAppSettings()
++        val tmdbContext = LocalContext.current
++        val tmdbKey = remember(tmdbContext) {
++            com.mihon.common.preference.AndroidPreferenceStore(tmdbContext)
++                .getString(com.lagradost.cloudstream3.utils.TmdbPosters.PREF_KEY, com.lagradost.cloudstream3.utils.TmdbPosters.defaultKey())
++        }
+ 
+         // TODO Refactor entirely to use a different file path selector ect like QuickNovel
+         val selectFileSelector =
+@@ -114,6 +119,20 @@ object SettingsGeneralScreen : SearchableSettings {
+         }.sortedBy { fromTagToLanguageName(it) ?: it }
+ 
+         return persistentListOf(
++            Preference.PreferenceGroup(title = "TMDB", preferenceItems = persistentListOf(
++                Preference.PreferenceItem.EditTextPreference(
++                    preference = tmdbKey,
++                    title = "TMDB API anahtarı",
++                    subtitle = "%s",
++                    onValueChanged = {
++                        com.lagradost.cloudstream3.utils.TmdbPosters.clearCache()
++                        true
++                    }
++                ),
++                Preference.PreferenceItem.InfoPreference(
++                    title = "Depodaki içeriğin afişi yoksa bu anahtarla TMDB'den çekilir; Nuvio eklentileri de bu anahtarı kullanır. Boş bırakırsan yerleşik anahtar kullanılır."
++                ),
++            )),
+             Preference.PreferenceGroup(title = stringResource(R.string.extension_language), preferenceItems = persistentListOf(
+                 Preference.PreferenceItem.ListPreference(
+                     preference = settings.general.locale,
 diff --git a/app/src/main/java/com/lagradost/cloudstream3/ui/settings/extensions/ExtensionsFragment.kt b/app/src/main/java/com/lagradost/cloudstream3/ui/settings/extensions/ExtensionsFragment.kt
 index 1072274..4c14bcd 100644
 --- a/app/src/main/java/com/lagradost/cloudstream3/ui/settings/extensions/ExtensionsFragment.kt
@@ -40495,6 +40569,103 @@ index 1072274..4c14bcd 100644
                          val url = RepositoryManager.parseRepoUrl(urlInput)
                          if (url.isNullOrBlank()) {
                              showToast(R.string.error_invalid_data, Toast.LENGTH_SHORT)
+diff --git a/app/src/main/java/com/lagradost/cloudstream3/utils/TmdbPosters.kt b/app/src/main/java/com/lagradost/cloudstream3/utils/TmdbPosters.kt
+new file mode 100644
+index 0000000..36af8cd
+--- /dev/null
++++ b/app/src/main/java/com/lagradost/cloudstream3/utils/TmdbPosters.kt
+@@ -0,0 +1,91 @@
++package com.lagradost.cloudstream3.utils
++
++import androidx.preference.PreferenceManager
++import com.lagradost.cloudstream3.BuildConfig
++import com.lagradost.cloudstream3.CloudStreamApp
++import com.lagradost.cloudstream3.TvType
++import com.lagradost.cloudstream3.app
++import com.lagradost.cloudstream3.nuvio.NUVIO_TMDB_API_KEY
++import org.json.JSONObject
++import java.net.URLEncoder
++import java.util.concurrent.ConcurrentHashMap
++
++/**
++ * Finds a poster on TMDB for titles whose provider gave none.
++ * The API key is a setting (Ayarlar › Genel › TMDB API anahtarı).
++ */
++object TmdbPosters {
++    const val PREF_KEY = "tmdb_api_key"
++    private const val IMAGE_BASE = "https://image.tmdb.org/t/p/w342"
++
++    /** "" means: looked up, nothing found. */
++    private val cache = ConcurrentHashMap<String, String>()
++
++    fun defaultKey(): String = BuildConfig.TMDB_API_KEY.takeIf { it.isNotBlank() } ?: NUVIO_TMDB_API_KEY
++
++    fun apiKey(): String {
++        val ctx = CloudStreamApp.context
++        val saved = ctx?.let {
++            PreferenceManager.getDefaultSharedPreferences(it).getString(PREF_KEY, null)
++        }?.trim()
++        return saved?.takeIf { it.isNotEmpty() } ?: defaultKey()
++    }
++
++    fun clearCache() = cache.clear()
++
++    private val yearRegex = Regex("""\b(19|20)\d{2}\b""")
++    private val noiseRegex = Regex(
++        """\(\s*\d{4}\s*\)|\[[^]]*]|(?i)\b(türkçe|turkce|tr)?\s*(dublaj|dublajlı|altyazılı|altyazili|altyazı|izle|full\s*hd|hd|1080p|720p|4k|uhd)\b"""
++    )
++
++    fun cleanTitle(name: String): String =
++        noiseRegex.replace(name, " ").replace(Regex("""[|•·:–-]+\s*$"""), " ")
++            .replace(Regex("""\s+"""), " ").trim()
++
++    private fun enc(s: String) = URLEncoder.encode(s, "UTF-8")
++
++    suspend fun poster(name: String, type: TvType?): String? {
++        val query = cleanTitle(name)
++        if (query.length < 2) return null
++        val year = yearRegex.find(name)?.value
++        val endpoint = when (type) {
++            TvType.Movie, TvType.AnimeMovie -> "movie"
++            TvType.TvSeries, TvType.Anime, TvType.Cartoon, TvType.AsianDrama, TvType.OVA -> "tv"
++            else -> "multi"
++        }
++        val cacheKey = "$endpoint|${query.lowercase()}|$year"
++        cache[cacheKey]?.let { return it.ifEmpty { null } }
++
++        val yearParam = when {
++            year == null -> ""
++            endpoint == "movie" -> "&year=$year"
++            endpoint == "tv" -> "&first_air_date_year=$year"
++            else -> ""
++        }
++        val url = "https://api.themoviedb.org/3/search/$endpoint?api_key=${enc(apiKey())}" +
++            "&query=${enc(query)}&language=tr-TR&include_adult=false$yearParam"
++
++        val found = try {
++            val response = app.get(url)
++            if (!response.isSuccessful) null else {
++                val results = JSONObject(response.text).optJSONArray("results")
++                var path: String? = null
++                if (results != null) {
++                    for (i in 0 until results.length()) {
++                        val r = results.optJSONObject(i) ?: continue
++                        if (r.optString("media_type") == "person") continue
++                        val p = r.optString("poster_path")
++                        if (p.isNotBlank() && p != "null") {
++                            path = p; break
++                        }
++                    }
++                }
++                path?.let { IMAGE_BASE + it }
++            }
++        } catch (e: Exception) {
++            null
++        }
++        cache[cacheKey] = found ?: ""
++        return found
++    }
++}
 diff --git a/app/src/main/res/navigation/mobile_navigation.xml b/app/src/main/res/navigation/mobile_navigation.xml
 index d60abc2..5435449 100644
 --- a/app/src/main/res/navigation/mobile_navigation.xml
